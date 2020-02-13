@@ -4,6 +4,7 @@ from jwcrypto import jwt, jwk
 from flask_sqlalchemy import sqlalchemy, SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
+import json
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -48,8 +49,17 @@ def VerifyLogin(email, password):
 			return user.uid
 	return 0
 
+@socketio.on("new_game")
+def CreateNewGame(data):
+	user_claims = json.loads(VerifyToken(data['token']))
+	print(user_claims)
+	user_id = user_claims['user_id']
+	emit( "game", { 'game_id': 0 })
+
 @socketio.on("game")
-def GetGame(game_id):
+def GetGame(data):
+	user_claims = VerifyToken(token)
+	user_id = user_claims['user_id']
 	emit( "game", { 'game_id': game_id })
 
 @app.route("/ships/<game_id>", methods=['GET'])
