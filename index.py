@@ -76,6 +76,17 @@ def VerifyToken(token):
 	read_token = jwt.JWT(key=server_key, jwt=token)
 	return read_token.claims
 
-if(__name__ == '__main__'):
+def SetupDemoDBData():
 	db.create_all()
+	new_user_one = User(email="testone@evolvingdeveloper.com", password=generate_password_hash('password', 'sha256'))
+	new_user_two = User(email="testtwo@evolvingdeveloper.com", password=generate_password_hash('password', 'sha256'))
+	db.session.add(new_user_one)
+	db.session.add(new_user_two)
+	try:
+		db.session.commit()
+	except sqlalchemy.exc.IntegrityError:
+		print("demo users already exist")
+
+if(__name__ == '__main__'):
+	SetupDemoDBData()
 	socketio.run(app)
