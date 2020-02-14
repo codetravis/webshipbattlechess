@@ -1,30 +1,19 @@
 from flask import Flask, render_template, request, url_for, redirect, flash, session, abort
 from flask_socketio import SocketIO, emit
 from jwcrypto import jwt, jwk
-from flask_sqlalchemy import sqlalchemy, SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-import sqlite3
+from database import db_session, init_db
+from models import User
 import json
 
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{db}'.format(db='sample_game.db')
-
-#connection = sqlite3.connect('sample_game.db')
-#db_cursor = connection.cursor()
-
 server_key = jwk.JWK(generate='oct', size=256)
 
-db = SQLAlchemy(app)
-
-class User(db.Model):
-	uid = db.Column(db.Integer, primary_key=True)
-	email = db.Column(db.String(100), unique=True, nullable=False)
-	password = db.Column(db.String(256), nullable=False)
-	
-	def __rep__(self):
-		return '' % self.email
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+	db_session.remove()
 
 @app.route("/main_menu")
 def MainMenu():
@@ -46,7 +35,7 @@ def VerifyLogin(email, password):
 	user = User.query.filter_by(email=email).first()
 	if(user):
 		if (check_password_hash(user.password, password)):
-			return user.uid
+			return user.id
 	return 0
 
 @socketio.on("new_game")
@@ -87,13 +76,13 @@ def VerifyToken(token):
 	return read_token.claims
 
 def SetupDemoDBData():
-	db.create_all()
+	init_db()
 	new_user_one = User(email="testone@evolvingdeveloper.com", password=generate_password_hash('password', 'sha256'))
 	new_user_two = User(email="testtwo@evolvingdeveloper.com", password=generate_password_hash('password', 'sha256'))
-	db.session.add(new_user_one)
-	db.session.add(new_user_two)
+	db_session.add(new_user_one)
+	db_session.add(new_user_two)
 	try:
-		db.session.commit()
+		db_session.commit()
 	except sqlalchemy.exc.IntegrityError:
 		print("demo users already exist")
 
