@@ -3,24 +3,13 @@
 	<head>
 		<script src="/static/js/jquery.3.4.1.min.js" type="text/javascript"></script>
 		<script src="/static/js/socket.io.js" type="text/javascript"></script>
+		<script src="/static/js/phaser.min.js" type="text/javascript"></script>
+		<script src="/static/js/scenes/game.js" type="text/javascript"></script>
+		<script src="/static/js/scenes/main_menu.js" type="text/javascript"></script>
+		<script src="/static/js/index.js" type="text/javascript"></script>
 	</head>
 	<script>
-		$('document').ready(function() {
-			var token = localStorage.getItem('token');
-			var socket = io('http://127.0.0.1:5000');
-			socket.on('connect', function(){
-			});
-			socket.on('game', function(data){
-				console.log(data);
-			});
-			socket.on('disconnect', function(){
-			});
-			
-			$("#new_game").on('click', function() {
-				console.log("new game button clicked");
-				socket.emit('new_game', { 'token': token });
-			});
-		});
+		
 	</script>
 	<body>
 		<button id="new_game" type="button">New Game</button>

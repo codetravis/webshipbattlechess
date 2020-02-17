@@ -4,6 +4,7 @@ from jwcrypto import jwt, jwk
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import db_session, init_db
 from models import User
+import sqlalchemy
 import json
 
 app = Flask(__name__)
@@ -29,6 +30,7 @@ def Authenticate():
 		token.make_signed_token(server_key)
 		claims = VerifyToken(token.serialize())
 		return { 'jwt': token.serialize(), 'claims': claims }
+	
 	return render_template('login.html')
 
 def VerifyLogin(email, password):
@@ -43,33 +45,65 @@ def CreateNewGame(data):
 	user_claims = json.loads(VerifyToken(data['token']))
 	print(user_claims)
 	user_id = user_claims['user_id']
-	emit( "game", { 'game_id': 0 })
+	# join existing game with empty player slot or create new game
+	game_id = 0
+	emit( "game", { 'game_id': game_id })
 
 @socketio.on("game")
 def GetGame(data):
-	user_claims = VerifyToken(token)
+	user_claims = json.loads(VerifyToken(data['token']))
 	user_id = user_claims['user_id']
+	# get game id of existing game this player is a part of
+	game_id = 0
 	emit( "game", { 'game_id': game_id })
 
-@app.route("/ships/<game_id>", methods=['GET'])
-def GetPlayerShips(game_id):
-	return "Player ships available in game: " + game_id
+@socketio.on("ships")
+def GetPlayerShips(data):
+	user_claims = json.loads(VerifyToken(data['token']))
+	user_id = user_claims['user_id']
+	game_id = data['game_id']
+	emit( "ship_list", { 'ships': [] })
 	
-@app.route("/endturn", methods=['POST'])
-def EndTurn(game_id, player_id):
-	return "Ending turn for player: " + player_id + " in game: " + game_id
+@socketio.on("end_turn")
+def EndTurn(data):
+	user_claims = json.loads(VerifyToken(data['token']))
+	user_id = user_claims['user_id']
+	game_id = data['game_id']
+	emit( "end_turn", {})
 	
-@app.route("/moveship", methods=['POST'])
-def MoveShip(game_id, ship_id):
-	return "Moving ship: " + ship_id + " in game: " + game_id
+@socketio.on("move_ship")
+def MoveShip(data):
+	user_claims = json.loads(VerifyToken(data['token']))
+	user_id = user_claims['user_id']
+	game_id = data['game_id']
+	ship_id = data['ship_id']
+	move_target = data['move_target']
+	emit("move_ship", { 'ship_id': 0, 'new_location': { 'x': 0, 'y': 0 } })
 
-@app.route("/targets/<game_id>/<ship_id>", methods=['GET'])
-def GetTargets(game_id, ship_id):
-	return "Ship: " + ship_id + " has available targets"
+@socketio.on("get_targets")
+def GetTargets(data):
+	user_claims = json.loads(VerifyToken(data['token']))
+	user_id = user_claims['user_id']
+	game_id = data['game_id']
+	ship_id = data['ship_id']
+	emit("show_targets", { 'targets': [] })
 
-@app.route("/attack", methods=['POST'])
-def AttackTarget(game_id, ship_id, target_id):
-	return "Attacking ship: " + target_id + " with ship: " + ship_id + " in game: " + game_id
+@socketio.on("attack_ship")
+def AttackTarget(data):
+	user_claims = json.loads(VerifyToken(data['token']))
+	user_id = user_claims['user_id']
+	game_id = data['game_id']
+	ship_id = data['ship_id']
+	emit("update_ships", { 'attacker': {}, 'defender': {} })
+
+@socketio.on("perform_action")
+def PerformAction(data):
+	user_claims = json.loads(VerifyToken(data['token']))
+	user_id = user_claims['user_id']
+	game_id = data['game_id']
+	ship_id = data['ship_id']
+	action = data['action']
+	emit("update_ship", { 'ship': {} })
 
 def VerifyToken(token):
 	read_token = jwt.JWT(key=server_key, jwt=token)
