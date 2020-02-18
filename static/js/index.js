@@ -1,12 +1,7 @@
-import Phaser from "phaser";
-import { GameScene } from "./scenes/game";
-import { MainMenuScene } from "./scenes/main-menu-scene";
-
-var socket = io('http://127.0.0.1:5000');
 
 $('document').ready(function() {
     var token = localStorage.getItem('token');
-    
+    var socket = io('http://127.0.0.1:5000');
     socket.on('connect', function(){
     });
     socket.on('game', function(data){
@@ -21,19 +16,3 @@ $('document').ready(function() {
     });
 });
 
-const config = {
-    type: Phaser.AUTO,
-    parent: "phaser-example",
-    width: 800,
-    height: 600,
-    physics: {
-      default: 'arcade',
-      arcade: {
-        gravity: { y: 0 },
-        debug: true
-      }
-    },
-    scene: [MainMenuScene, GameScene]
-  };
-
-const game = new Phaser.Game(config);

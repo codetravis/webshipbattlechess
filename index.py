@@ -7,7 +7,7 @@ from models import User
 import sqlalchemy
 import json
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 socketio = SocketIO(app)
 
 server_key = jwk.JWK(generate='oct', size=256)
@@ -69,7 +69,7 @@ def EndTurn(data):
 	user_claims = json.loads(VerifyToken(data['token']))
 	user_id = user_claims['user_id']
 	game_id = data['game_id']
-	emit( "end_turn", {})
+	emit( "end_turn", { 'turn': 0, 'active_player': 0 })
 	
 @socketio.on("move_ship")
 def MoveShip(data):
