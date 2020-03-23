@@ -3,7 +3,7 @@ from flask_socketio import SocketIO, emit
 from jwcrypto import jwt, jwk
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import db_session, init_db
-from models import User
+from models import User, Game, Ship
 import sqlalchemy
 import json
 
