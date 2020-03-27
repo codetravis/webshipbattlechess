@@ -4,6 +4,7 @@ from jwcrypto import jwt, jwk
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import db_session, init_db
 from models import User
+import sqlalchemy
 import json
 
 app = Flask(__name__)
@@ -28,6 +29,11 @@ def Authenticate():
 		return { 'jwt': token.serialize(), 'claims': claims }
 
 	return render_template('login.html')
+
+
+@app.route("/game", methods=['GET'])
+def LoadGame():
+	return render_template('game.html')
 
 
 def VerifyLogin(email, password):
