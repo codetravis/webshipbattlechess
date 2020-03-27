@@ -11,7 +11,7 @@ $(document).ready(function() {
 			success: function(data) {
 				console.log(data);
 				localStorage.setItem('token', data['jwt']);
-				window.location = "/main_menu";
+				window.location = "/game";
 			}
 		});
 	});
