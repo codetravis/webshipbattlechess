@@ -8,7 +8,7 @@ class Ship extends Phaser.GameObjects.Sprite {
         config.scene.add.existing(this);
 
         this.ship_id = config.ship_id;
-        this.speed = 1;
+        this.speed = 2;
         this.facing = config.facing;
 
         this.setInteractive();
