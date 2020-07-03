@@ -8,10 +8,25 @@ class SceneMain extends Phaser.Scene {
     }
 
     create() {
-        this.test_image = this.add.sprite(100, 100, "light_freighter");
-        this.test_image.displayWidth = 32;
-        this.test_image.scaleY = this.test_image.scaleX;
+        this.active_ship = null;
+        this.test_ship = new Ship({ scene: this, 
+                                    x: 100, 
+                                    y: 100,
+                                    hull: "light_freighter", 
+                                    team: 0, 
+                                    facing: 0, 
+                                    ship_id: 1});
+        
+        this.emitter = EventDispatcher.getInstance();
+        this.emitter.on("SHIP_CLICKED", this.setActiveShip.bind(this));
     }
 
-    update() {}
+    update() {
+
+    }
+
+    setActiveShip(ship) {
+        console.log(ship.ship_id + " " + ship.x + " " + ship.y);
+        this.active_ship = ship;
+    }
 }
