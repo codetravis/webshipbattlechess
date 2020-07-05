@@ -5,15 +5,26 @@ class SceneMain extends Phaser.Scene {
 
     preload() {
         this.load.image("light_freighter", "images/light_freighter.svg");
+        this.load.image("light_scout", "images/light_scout.svg");
         this.load.image("move_square", "images/movement_square.svg");
+        this.load.image("end_button", "images/movement_square.svg");
     }
 
     create() {
+        this.active_team = 0;
         this.map_width = 640;
         this.map_height = 640;
         this.allShips = [];
         this.active_ship = null;
         this.movementSquares = [];
+
+        this.end_turn_button = new UIButton({
+            scene: this,
+            x: 500,
+            y: 680,
+            action_name: "END_TURN",
+            key: "end_button",
+        });
         
         this.test_ship = new Ship({ scene: this, 
                                     x: 320, 
@@ -34,11 +45,22 @@ class SceneMain extends Phaser.Scene {
             ship_id: 2});
 
         this.allShips.push(this.test_ship_two);
+
+        this.test_ship_three = new Ship({ scene: this, 
+            x: 32, 
+            y: 32,
+            hull: "light_scout", 
+            team: 1, 
+            facing: 0, 
+            ship_id: 3});
+
+        this.allShips.push(this.test_ship_three);
         
         this.emitter = EventDispatcher.getInstance();
         this.emitter.on("SHIP_CLICKED", this.setActiveShip.bind(this));
 
         this.emitter.on("MOVE_CLICKED", this.moveActiveShip.bind(this));
+        this.emitter.on("END_TURN", this.endTurn.bind(this));
     }
 
     update() {
@@ -46,12 +68,14 @@ class SceneMain extends Phaser.Scene {
     }
 
     setActiveShip(ship) {
-        console.log(ship.ship_id + " " + ship.x + " " + ship.y);
-        this.active_ship = ship;
-        this.movementSquares.forEach((square) => {
-            square.destroy();
-        });
-        this.drawMovement(ship);
+        if(this.active_team == ship.team) {
+            console.log(ship.ship_id + " " + ship.x + " " + ship.y);
+            this.active_ship = ship;
+            this.movementSquares.forEach((square) => {
+                square.destroy();
+            });
+            this.drawMovement(ship);
+        }
     }
 
     drawMovement(ship) {
@@ -110,5 +134,13 @@ class SceneMain extends Phaser.Scene {
 
     drawTargets(ship) {
 
+    }
+
+    endTurn() {
+        if(this.active_team == 0) {
+            this.active_team = 1;
+        } else {
+            this.active_team = 0;
+        }
     }
 }
