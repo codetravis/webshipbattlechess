@@ -4,8 +4,8 @@ window.onload = function() {
 
     var config = {
         type: Phaser.AUTO,
-        width: 480,
-        height: 640,
+        width: 640,
+        height: 860,
         parent: 'game-div',
         scene: [SceneMain]
     };

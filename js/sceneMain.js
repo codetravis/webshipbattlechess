@@ -9,6 +9,8 @@ class SceneMain extends Phaser.Scene {
     }
 
     create() {
+        this.map_width = 640;
+        this.map_height = 640;
         this.allShips = [];
         this.active_ship = null;
         this.movementSquares = [];
@@ -84,6 +86,11 @@ class SceneMain extends Phaser.Scene {
         let valid = true;
         this.allShips.forEach((ship) => {
             if(target_x == ship.x && target_y == ship.y) {
+                valid = false;
+            }
+
+            if(target_x >= this.map_width || target_y >= this.map_height ||
+                target_x < 32 || target_y < 32) {
                 valid = false;
             }
         });
