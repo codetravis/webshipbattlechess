@@ -31,7 +31,6 @@ class SceneMain extends Phaser.Scene {
                                     x: 320, 
                                     y: 320,
                                     hull: "light_freighter", 
-                                    speed: 2,
                                     team: 0, 
                                     facing: 0, 
                                     ship_id: 1});
@@ -42,7 +41,6 @@ class SceneMain extends Phaser.Scene {
             x: 352, 
             y: 320,
             hull: "light_freighter",
-            speed: 2,
             team: 0, 
             facing: 0, 
             ship_id: 2});
@@ -53,7 +51,6 @@ class SceneMain extends Phaser.Scene {
             x: 32, 
             y: 32,
             hull: "light_scout", 
-            speed: 3,
             team: 1, 
             facing: 4, 
             ship_id: 3});

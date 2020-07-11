@@ -7,9 +7,12 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.scaleY = this.scaleX;
         config.scene.add.existing(this);
 
+        let hullStats = new HullStats();
+        this.stats = hullStats.getBaseHullStats(config.hull);
+        this.turrets = [];
         this.ship_id = config.ship_id;
-        this.scan_range = config.speed;
-        this.speed = config.speed;
+        this.scan_range = this.stats.scan_range;
+        this.speed = this.stats.speed;
         this.facing = config.facing;
         this.angle = 45 * this.facing;
         this.team = config.team;
