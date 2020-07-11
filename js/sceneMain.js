@@ -55,7 +55,7 @@ class SceneMain extends Phaser.Scene {
             hull: "light_scout", 
             speed: 3,
             team: 1, 
-            facing: 0, 
+            facing: 4, 
             ship_id: 3});
 
         this.allShips.push(this.test_ship_three);
@@ -66,6 +66,8 @@ class SceneMain extends Phaser.Scene {
         this.emitter.on("MOVE_CLICKED", this.moveActiveShip.bind(this));
         this.emitter.on("FACE_CLICKED", this.faceActiveShip.bind(this));
         this.emitter.on("END_TURN", this.endTurn.bind(this));
+
+        this.resetShipActions(this.active_team);
     }
 
     update() {
@@ -173,32 +175,39 @@ class SceneMain extends Phaser.Scene {
         if(ship.facing === 0 && target_y > ship.y) {
             return false;
         }
-        if(ship.facing === 1 && target_x < ship.x && target_y > ship.y) {
+        if(ship.facing === 1 && this.sideOfSlope(target_x, target_y, ship, 1) >= 0) {
             return false;
         }
         if(ship.facing === 2 && target_x < ship.x) {
             return false;
         }
-        if(ship.facing === 3 && target_x < ship.x && target_y < ship.y) {
+        if(ship.facing === 3 && this.sideOfSlope(target_x, target_y, ship, -1) <= 0) {
             return false;
         }
         if(ship.facing === 4 && target_y < ship.y) {
             return false;
         }
-        if(ship.facing === 5 && target_x > ship.x && target_y < ship.y) {
+        if(ship.facing === 5 && this.sideOfSlope(target_x, target_y, ship, 1) <= 0) {
             return false;
         }
         if(ship.facing === 6 && target_x > ship.x) {
             return false;
         }
-        if(ship.facing === 7 && target_x > ship.x && target_y > ship.y) {
+        if(ship.facing === 7 && this.sideOfSlope(target_x, target_y, ship, -1) >= 0) {
             return false;
         }
         return true;
     }
 
+    sideOfSlope(target_x, target_y, ship, direction) {
+        let slope = { x: ship.x + 2, y: ship.y + (2 * direction) };
+
+        return (slope.x - ship.x) * (target_y - ship.y) - (slope.y - ship.y) * (target_x - ship.x);
+    }
+
     moveActiveShip(targetSquare) {
         this.active_ship.moveMe(targetSquare.x, targetSquare.y);
+        this.showEnemies(this.active_ship.x, this.active_ship.y, this.active_ship.scan_range, this.active_ship.team);
 
         this.movementSquares.forEach((square) => {
             square.destroy();
@@ -224,6 +233,24 @@ class SceneMain extends Phaser.Scene {
         this.allShips.forEach((ship) => {
             if(ship.team === team) {
                 ship.prepareForAction();
+                ship.showMe();
+                this.showEnemies(ship.x, ship.y, ship.scan_range, team);
+            } else {
+                ship.hideMe();
+            }
+        });
+
+        this.allShips.forEach((ship) => {
+            if(ship.team === team) {
+                this.showEnemies(ship.x, ship.y, ship.scan_range, team);
+            }
+        });
+    }
+
+    showEnemies(x, y, range, team) {
+        this.allShips.forEach((ship) => {
+            if(Math.abs(ship.x - x) <= (range * 32) && Math.abs(ship.y - y) <= (range * 32) && ship.team !== team) {
+                ship.showMe();
             }
         });
     }

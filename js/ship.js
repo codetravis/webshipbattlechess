@@ -8,8 +8,10 @@ class Ship extends Phaser.GameObjects.Sprite {
         config.scene.add.existing(this);
 
         this.ship_id = config.ship_id;
+        this.scan_range = config.speed;
         this.speed = config.speed;
         this.facing = config.facing;
+        this.angle = 45 * this.facing;
         this.team = config.team;
         this.has_moved = 0;
         this.has_faced = 0;
@@ -43,6 +45,14 @@ class Ship extends Phaser.GameObjects.Sprite {
     prepareForAction() {
         this.has_moved = 0;
         this.has_faced = 0;
+    }
+
+    hideMe() {
+        this.visible = false;
+    }
+
+    showMe() {
+        this.visible = true;
     }
 
 }
