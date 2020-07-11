@@ -17,7 +17,8 @@ class HullStats {
                 "front_shield": 5,
                 "right_shield": 5,
                 "left_shield": 5,
-                "rear_shield": 5, 
+                "rear_shield": 5,
+                "core_health": 10, 
             }
         }
     }

@@ -8,9 +8,13 @@ class Ship extends Phaser.GameObjects.Sprite {
         config.scene.add.existing(this);
 
         this.ship_id = config.ship_id;
-        this.speed = 2;
+        this.speed = config.speed;
         this.facing = config.facing;
         this.team = config.team;
+        this.has_moved = 0;
+        this.has_faced = 0;
+        this.energy = 0;
+        this.core_heat = 0;
 
         this.setInteractive();
         this.on('pointerdown', this.clicked, this);
@@ -21,11 +25,24 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.emitter.emit("SHIP_CLICKED", this);
     }
 
-    moveMe(x, y, facing) {
+    moveMe(x, y) {
         // add animation
         this.x = x;
         this.y = y;
+    
+        this.has_moved = 1;
+    }
+
+    faceMe(facing) {
+        this.angle = 45 * facing;
         this.facing = facing;
+
+        this.has_faced = 1;
+    }
+
+    prepareForAction() {
+        this.has_moved = 0;
+        this.has_faced = 0;
     }
 
 }
