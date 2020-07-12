@@ -12,7 +12,7 @@ class HullStats {
         return {
             "light_freighter": {
                 speed: 2,
-                turrets: 1,
+                max_turrets: 1,
                 scan_range: 2,
                 front_armor: 5,
                 right_armor: 5,
@@ -26,7 +26,7 @@ class HullStats {
             }, 
             "light_scout": {
                 speed: 3,
-                turrets: 2,
+                max_turrets: 2,
                 scan_range: 4,
                 front_armor: 6,
                 right_armor: 6,

@@ -2,17 +2,17 @@
 
 class Ship extends Phaser.GameObjects.Sprite {
     constructor(config) {
-        super(config.scene, config.x, config.y, config.hull);
+        super(config.scene, config.x, config.y, config.hull_name);
         this.displayWidth = 32;
         this.scaleY = this.scaleX;
         config.scene.add.existing(this);
 
         let hullStats = new HullStats();
-        this.stats = hullStats.getBaseHullStats(config.hull);
+        this.hull = hullStats.getBaseHullStats(config.hull_name);
         this.turrets = [];
         this.ship_id = config.ship_id;
-        this.scan_range = this.stats.scan_range;
-        this.speed = this.stats.speed;
+        this.scan_range = this.hull.scan_range;
+        this.speed = this.hull.speed;
         this.facing = config.facing;
         this.angle = 45 * this.facing;
         this.team = config.team;
@@ -56,6 +56,15 @@ class Ship extends Phaser.GameObjects.Sprite {
 
     showMe() {
         this.visible = true;
+    }
+
+    addTurret(turret_key) {
+        if(this.turrets.length < this.hull.max_turrets) {
+            let new_turret = new Turret({scene: this.scene, x: 32 * this.turrets.length, y: 800, key: turret_key});
+            this.turrets.push(new_turret);
+            return true
+        }
+        return false;
     }
 
 }

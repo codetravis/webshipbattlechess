@@ -30,7 +30,7 @@ class SceneMain extends Phaser.Scene {
         this.test_ship = new Ship({ scene: this, 
                                     x: 320, 
                                     y: 320,
-                                    hull: "light_freighter", 
+                                    hull_name: "light_freighter", 
                                     team: 0, 
                                     facing: 0, 
                                     ship_id: 1});
@@ -40,7 +40,7 @@ class SceneMain extends Phaser.Scene {
         this.test_ship_two = new Ship({ scene: this, 
             x: 352, 
             y: 320,
-            hull: "light_freighter",
+            hull_name: "light_freighter",
             team: 0, 
             facing: 0, 
             ship_id: 2});
@@ -50,7 +50,7 @@ class SceneMain extends Phaser.Scene {
         this.test_ship_three = new Ship({ scene: this, 
             x: 32, 
             y: 32,
-            hull: "light_scout", 
+            hull_name: "light_scout", 
             team: 1, 
             facing: 4, 
             ship_id: 3});
