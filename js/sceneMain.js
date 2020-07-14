@@ -7,6 +7,7 @@ class SceneMain extends Phaser.Scene {
         this.load.image("light_freighter", "images/light_freighter.svg");
         this.load.image("light_scout", "images/light_scout.svg");
         this.load.image("move_square", "images/movement_square.svg");
+        this.load.image("attack_square", "images/attack_square.svg");
         this.load.image("end_button", "images/movement_square.svg");
     }
 
@@ -17,6 +18,7 @@ class SceneMain extends Phaser.Scene {
         this.allShips = [];
         this.active_ship = null;
         this.movementSquares = [];
+        this.attackSquares = [];
         this.facingSquares = [];
 
         this.end_turn_button = new UIButton({
@@ -62,6 +64,7 @@ class SceneMain extends Phaser.Scene {
 
         this.emitter.on("MOVE_CLICKED", this.moveActiveShip.bind(this));
         this.emitter.on("FACE_CLICKED", this.faceActiveShip.bind(this));
+        this.emitter.on("ATTACK_CLICKED", this.attackTargetShip.bind(this));
         this.emitter.on("END_TURN", this.endTurn.bind(this));
 
         this.resetShipActions(this.active_team);
@@ -116,6 +119,25 @@ class SceneMain extends Phaser.Scene {
                 }
             }
         }
+    }
+
+    drawAttacks(ship) {
+        let max_range = 0;
+        ship.hull.hard_points.forEach((hard_point) => {
+            max_range = max(max_range, hard_point.turret.range);
+        })
+
+        this.attackSquares.forEach((square) => {
+            square.destroy();
+        })
+        this.attackSquares = [];
+
+        this.allShips.forEach((target) => {
+            if(target.team !== ship.team && Math.abs(target.x - ship.x) <= max_range && Math.abs(target.y - ship.y) <= max_range) {
+                this.attackSquares.push(new ActionSquare({scene: this, x: ship.x, y: ship.y - square_size, facing: 0, key: "attack_square", event_name: "ATTACK_CLICKED"}));
+            }
+        });
+
     }
 
     drawFacing(ship) {
@@ -222,8 +244,15 @@ class SceneMain extends Phaser.Scene {
         this.facingSquares = [];
     }
 
-    drawTargets(ship) {
+    attackTargetShip(targetSquare) {
+        let target = null;
+        this.allShips.forEach((ship) => {
+            if(ship.team !== this.active_ship.team && ship.x === targetSquare.x && ship.y === targetSquare.y) {
+                target = ship;
+            }
+        });
 
+        this.active_ship.attacked = 1;
     }
 
     resetShipActions(team) {
