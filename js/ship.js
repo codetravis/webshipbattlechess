@@ -17,6 +17,7 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.team = config.team;
         this.has_moved = 0;
         this.has_faced = 0;
+        this.has_attacked = 0;
         this.core_stress = 0;
 
         this.setInteractive();
@@ -46,6 +47,7 @@ class Ship extends Phaser.GameObjects.Sprite {
     prepareForAction() {
         this.has_moved = 0;
         this.has_faced = 0;
+        this.has_attacked = 0;
     }
 
     hideMe() {

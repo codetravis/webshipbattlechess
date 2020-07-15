@@ -9,6 +9,7 @@ class SceneMain extends Phaser.Scene {
         this.load.image("move_square", "images/movement_square.svg");
         this.load.image("attack_square", "images/attack_square.svg");
         this.load.image("end_button", "images/movement_square.svg");
+        this.load.image("single_laser_cannon", "images/single_laser.png");
     }
 
     create() {
@@ -56,6 +57,7 @@ class SceneMain extends Phaser.Scene {
             team: 1, 
             facing: 4, 
             ship_id: 3});
+        this.test_ship_three.addTurret(0, "single_laser_cannon");
 
         this.allShips.push(this.test_ship_three);
         
@@ -84,10 +86,17 @@ class SceneMain extends Phaser.Scene {
             this.facingSquares.forEach((square) => {
                 square.destroy();
             });
+            this.attackSquares.forEach((square) => {
+                square.destroy();
+            });
+
             if (this.active_ship.has_moved === 0) {
                 this.drawMovement(ship);
             } else if (this.active_ship.has_faced === 0) {
                 this.drawFacing(ship);
+            } else if (this.active_ship.has_attacked === 0) {
+                console.log("drawing  attacks");
+                this.drawAttacks(ship);
             }
         }
     }
@@ -123,8 +132,14 @@ class SceneMain extends Phaser.Scene {
 
     drawAttacks(ship) {
         let max_range = 0;
+        let square_size = 32;
         ship.hull.hard_points.forEach((hard_point) => {
-            max_range = max(max_range, hard_point.turret.range);
+            console.log("hard point range check for: " + hard_point.name);
+            if(hard_point.turret) {
+                console.log("turret found with range " + hard_point.turret.values.range);
+                max_range = Math.max(max_range, hard_point.turret.values.range);
+                console.log("new max range " + max_range);
+            }
         })
 
         this.attackSquares.forEach((square) => {
@@ -133,8 +148,12 @@ class SceneMain extends Phaser.Scene {
         this.attackSquares = [];
 
         this.allShips.forEach((target) => {
-            if(target.team !== ship.team && Math.abs(target.x - ship.x) <= max_range && Math.abs(target.y - ship.y) <= max_range) {
-                this.attackSquares.push(new ActionSquare({scene: this, x: ship.x, y: ship.y - square_size, facing: 0, key: "attack_square", event_name: "ATTACK_CLICKED"}));
+            console.log("target team is " + target.team + " and attacker team is " + ship.team);
+            console.log("distance to target in x direction " + Math.abs(target.x - ship.x));
+            console.log("distance to target in y direction " + Math.abs(target.y - ship.y));
+            if(target.team !== ship.team && Math.abs(target.x - ship.x) <= max_range * square_size && Math.abs(target.y - ship.y) <= max_range * square_size) {
+                console.log("Drawing attack " + target.x + " " + target.y); 
+                this.attackSquares.push(new ActionSquare({scene: this, x: target.x, y: target.y, facing: 0, key: "attack_square", event_name: "ATTACK_CLICKED"}));
             }
         });
 
@@ -252,7 +271,14 @@ class SceneMain extends Phaser.Scene {
             }
         });
 
-        this.active_ship.attacked = 1;
+        console.log("Attacked " + target.ship_id + " from " + this.active_ship.ship_id);
+        this.attackSquares.forEach((square) => {
+            square.destroy();
+        })
+        this.attackSquares = [];
+        this.active_ship.has_attacked = 1;
+        // Do damage to target from active ship
+
     }
 
     resetShipActions(team) {
