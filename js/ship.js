@@ -62,4 +62,22 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.hull.hard_points[turret_id].turret = new Turret({scene: this.scene, x: 100, y: 800, key: turret_key})
     }
 
+    receiveDamage(amount, type, face) {
+        if(this.hull[face + "_shield"] > 0) { 
+            this.hull[face + "_shield"] -= amount;
+        } else if(this.hull[face + "_armor"] > 0) {
+            this.hull[face + "_armor"] -= amount;
+        } else {
+            this.hull.core_health -= amount;
+        }
+
+        if (type == "ion") {
+            this.core_stress += 10;
+        }
+    }
+
+    payCoreStress(amount) {
+        this.core_stress += amount;
+    }
+
 }

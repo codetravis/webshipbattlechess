@@ -31,8 +31,8 @@ class SceneMain extends Phaser.Scene {
         });
         
         this.test_ship = new Ship({ scene: this, 
-                                    x: 320, 
-                                    y: 320,
+                                    x: 32 * 10, 
+                                    y: 32 * 10,
                                     hull_name: "light_freighter", 
                                     team: 0, 
                                     facing: 0, 
@@ -41,8 +41,8 @@ class SceneMain extends Phaser.Scene {
         this.allShips.push(this.test_ship);
 
         this.test_ship_two = new Ship({ scene: this, 
-            x: 352, 
-            y: 320,
+            x: 32 * 5, 
+            y: 32 * 5,
             hull_name: "light_freighter",
             team: 0, 
             facing: 0, 
@@ -51,8 +51,8 @@ class SceneMain extends Phaser.Scene {
         this.allShips.push(this.test_ship_two);
 
         this.test_ship_three = new Ship({ scene: this, 
-            x: 32, 
-            y: 32,
+            x: 32 * 2, 
+            y: 32 * 2,
             hull_name: "light_scout", 
             team: 1, 
             facing: 4, 
@@ -79,6 +79,7 @@ class SceneMain extends Phaser.Scene {
     setActiveShip(ship) {
         if(this.active_team == ship.team) {
             console.log(ship.ship_id + " " + ship.x + " " + ship.y);
+            console.log(ship.hull.core_health);
             this.active_ship = ship;
             this.movementSquares.forEach((square) => {
                 square.destroy();
@@ -204,43 +205,44 @@ class SceneMain extends Phaser.Scene {
         }
 
         if(valid) {
-            valid = this.considerFacing(target_x, target_y, moving_ship);
+            valid = this.considerFacing({x: target_x, y: target_y}, moving_ship);
         }
         return valid;
     }
 
-    considerFacing(target_x, target_y, ship) {
-        if(ship.facing === 0 && target_y > ship.y) {
+    considerFacing(target, ship) {
+        if(ship.facing === 0 && target.y > ship.y) {
             return false;
         }
-        if(ship.facing === 1 && this.sideOfSlope(target_x, target_y, ship, 1) >= 0) {
+        if(ship.facing === 1 && this.sideOfSlope(target, ship, 1) >= 0) {
             return false;
         }
-        if(ship.facing === 2 && target_x < ship.x) {
+        if(ship.facing === 2 && target.x < ship.x) {
             return false;
         }
-        if(ship.facing === 3 && this.sideOfSlope(target_x, target_y, ship, -1) <= 0) {
+        if(ship.facing === 3 && this.sideOfSlope(target, ship, -1) <= 0) {
             return false;
         }
-        if(ship.facing === 4 && target_y < ship.y) {
+        if(ship.facing === 4 && target.y < ship.y) {
             return false;
         }
-        if(ship.facing === 5 && this.sideOfSlope(target_x, target_y, ship, 1) <= 0) {
+        if(ship.facing === 5 && this.sideOfSlope(target, ship, 1) <= 0) {
             return false;
         }
-        if(ship.facing === 6 && target_x > ship.x) {
+        if(ship.facing === 6 && target.x > ship.x) {
             return false;
         }
-        if(ship.facing === 7 && this.sideOfSlope(target_x, target_y, ship, -1) >= 0) {
+        if(ship.facing === 7 && this.sideOfSlope(target, ship, -1) >= 0) {
             return false;
         }
         return true;
     }
 
-    sideOfSlope(target_x, target_y, ship, direction) {
+    sideOfSlope(target, ship, direction) {
         let slope = { x: ship.x + 2, y: ship.y + (2 * direction) };
 
-        return (slope.x - ship.x) * (target_y - ship.y) - (slope.y - ship.y) * (target_x - ship.x);
+        // if positive, then on the right side of the slope, if negative, the left side
+        return (slope.x - ship.x) * (target.y - ship.y) - (slope.y - ship.y) * (target.x - ship.x);
     }
 
     moveActiveShip(targetSquare) {
@@ -265,12 +267,16 @@ class SceneMain extends Phaser.Scene {
 
     attackTargetShip(targetSquare) {
         let target = null;
+        let attack_face = null;
         this.allShips.forEach((ship) => {
             if(ship.team !== this.active_ship.team && ship.x === targetSquare.x && ship.y === targetSquare.y) {
                 target = ship;
+                attack_face = this.determineAttackFace(this.active_ship, target);
             }
         });
 
+        let turrets = this.turretsInRange(this.active_ship, target);
+        this.performAttack(this.active_ship, target, attack_face, turrets);
         console.log("Attacked " + target.ship_id + " from " + this.active_ship.ship_id);
         this.attackSquares.forEach((square) => {
             square.destroy();
@@ -279,6 +285,80 @@ class SceneMain extends Phaser.Scene {
         this.active_ship.has_attacked = 1;
         // Do damage to target from active ship
 
+    }
+
+    performAttack(attacker, target, attack_face, turrets) {
+        turrets.forEach((turret) => {
+            console.log("Attacking face " + attack_face + " of " + target.ship_id);
+            target.receiveDamage(turret.values.damage, turret.values.damage_type, attack_face);
+            console.log(attack_face  + "Shields are " + target.hull[attack_face + "_shield"]);
+            console.log(attack_face + "Armor is " + target.hull[attack_face + "_armor"]);
+            console.log("Core Health is " + target.hull.core_health);
+            attacker.payCoreStress(turret.power_cost);
+        });
+
+        if (target.hull.core_health <= 0) {
+            target.destroy();
+        }
+    }
+
+    turretsInRange(attacker, target) {
+        let turrets = [];
+        let square_size = 32;
+        attacker.hull.hard_points.forEach((hard_point) => {
+            if(hard_point.turret) {
+                if(Math.abs(target.x - attacker.x) <= hard_point.turret.values.range * square_size && 
+                    Math.abs(target.y - attacker.y) <= hard_point.turret.values.range * square_size) {
+                        turrets.push(hard_point.turret);
+                }
+            }
+        })
+        return turrets;
+    }
+
+    determineAttackFace(attacker, target) {
+        // determine section receiving damage by relative position
+        let attack_face = 0;
+        console.log("Target of attack is facing " + target.facing);
+        if ((target.facing % 2) == 0) {
+            let relative_to_postive_slope = this.sideOfSlope(attacker, target, 1);
+            let relative_to_negative_slope = this.sideOfSlope(attacker, target, -1);
+            if (relative_to_postive_slope <= 0 && relative_to_negative_slope <= 0) {
+                // above
+                attack_face = 0 + target.facing;
+            } else if (relative_to_postive_slope >= 0 && relative_to_negative_slope <= 0) {
+                // left?
+                attack_face = 2 + target.facing;
+            } else if (relative_to_postive_slope >= 0 && relative_to_negative_slope >= 0) {
+                // below
+                attack_face = 4 + target.facing;
+            } else if (relative_to_postive_slope <= 0 && relative_to_negative_slope >= 0) {
+                // right?
+                attack_face = 6 + target.facing;
+            }
+        } else {
+            let relative_to_x = attacker.x - target.x;
+            let relative_to_y = attacker.y - target.y;
+            if (relative_to_x >= 0 && relative_to_y <= 0) {
+                // up right
+                attack_face = 0 + target.facing - 1;
+            } else if (relative_to_x >= 0 && relative_to_y >= 0) {
+                // down right
+                attack_face = 6 + target.facing - 1;
+            } else if (relative_to_x <= 0 && relative_to_y >= 0) {
+                // down left
+                attack_face = 4 + target.facing - 1;
+            } else if (relative_to_x <= 0 && relative_to_y <= 0) {
+                // up left
+                attack_face = 2 + target.facing - 1;
+            }
+        }
+        console.log("Attack Face before modding " + attack_face);
+        attack_face = (attack_face % 8) / 2;
+        console.log("Attack face after adjustment " + attack_face);
+        // 0 is attack to the front, 1 is attack to the right side, 2 is attack to the rear, 3 is attack to the left side
+        let attack_faces = ["front", "left", "rear", "right"]
+        return attack_faces[attack_face];
     }
 
     resetShipActions(team) {
