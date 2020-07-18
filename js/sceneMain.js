@@ -16,11 +16,13 @@ class SceneMain extends Phaser.Scene {
         this.active_team = 0;
         this.map_width = 640;
         this.map_height = 640;
+        this.tile_size = 32;
         this.allShips = [];
         this.active_ship = null;
         this.movementSquares = [];
         this.attackSquares = [];
         this.facingSquares = [];
+        this.attackLines = [];
 
         this.end_turn_button = new UIButton({
             scene: this,
@@ -41,8 +43,8 @@ class SceneMain extends Phaser.Scene {
         this.allShips.push(this.test_ship);
 
         this.test_ship_two = new Ship({ scene: this, 
-            x: 32 * 5, 
-            y: 32 * 5,
+            x: this.tile_size * 5, 
+            y: this.tile_size * 5,
             hull_name: "light_freighter",
             team: 0, 
             facing: 0, 
@@ -51,8 +53,8 @@ class SceneMain extends Phaser.Scene {
         this.allShips.push(this.test_ship_two);
 
         this.test_ship_three = new Ship({ scene: this, 
-            x: 32 * 2, 
-            y: 32 * 2,
+            x: this.tile_size * 2, 
+            y: this.tile_size * 2,
             hull_name: "light_scout", 
             team: 1, 
             facing: 4, 
@@ -73,7 +75,13 @@ class SceneMain extends Phaser.Scene {
     }
 
     update() {
-
+        this.attackLines.forEach((line) => {
+            if(line.lifespan > 0) {
+                line.fade();
+            } else {
+                line.destroy();
+            }
+        });
     }
 
     setActiveShip(ship) {
@@ -106,14 +114,14 @@ class SceneMain extends Phaser.Scene {
         this.movementSquares = [];
         if(ship.has_moved === 0) {
             for( var i = 0; i <= ship.speed; i++) {
-                let plus_x = ship.x + (i * 32);
-                let minus_x = ship.x - (i * 32);
+                let plus_x = ship.x + (i * this.tile_size);
+                let minus_x = ship.x - (i * this.tile_size);
                 for( var j = 0; j <= ship.speed; j++) {
                     if (i == 0 && j == 0) {
                         continue;
                     }
-                    let plus_y = ship.y + (j * 32);
-                    let minus_y = ship.y - (j * 32);
+                    let plus_y = ship.y + (j * this.tile_size);
+                    let minus_y = ship.y - (j * this.tile_size);
                     if(this.validateMove(plus_x, plus_y, ship)) {
                         this.movementSquares.push(new ActionSquare({scene: this, x: plus_x, y: plus_y, key: "move_square", event_name: "MOVE_CLICKED"}));
                     }
@@ -133,7 +141,7 @@ class SceneMain extends Phaser.Scene {
 
     drawAttacks(ship) {
         let max_range = 0;
-        let square_size = 32;
+        let square_size = this.tile_size;
         ship.hull.hard_points.forEach((hard_point) => {
             console.log("hard point range check for: " + hard_point.name);
             if(hard_point.turret) {
@@ -200,7 +208,7 @@ class SceneMain extends Phaser.Scene {
         });
 
         if(target_x >= this.map_width || target_y >= this.map_height ||
-            target_x < 32 || target_y < 32) {
+            target_x < this.tile_size || target_y < this.tile_size) {
             valid = false;
         }
 
@@ -289,6 +297,8 @@ class SceneMain extends Phaser.Scene {
 
     performAttack(attacker, target, attack_face, turrets) {
         turrets.forEach((turret) => {
+            let new_attack_line = new AttackLine({scene: this, attacker: attacker, target: target, attack_type: "laser", lifespan: 200});
+            this.attackLines.push(new_attack_line);
             console.log("Attacking face " + attack_face + " of " + target.ship_id);
             target.receiveDamage(turret.values.damage, turret.values.damage_type, attack_face);
             console.log(attack_face  + "Shields are " + target.hull[attack_face + "_shield"]);
@@ -353,9 +363,7 @@ class SceneMain extends Phaser.Scene {
                 attack_face = 2 + target.facing - 1;
             }
         }
-        console.log("Attack Face before modding " + attack_face);
         attack_face = (attack_face % 8) / 2;
-        console.log("Attack face after adjustment " + attack_face);
         // 0 is attack to the front, 1 is attack to the right side, 2 is attack to the rear, 3 is attack to the left side
         let attack_faces = ["front", "left", "rear", "right"]
         return attack_faces[attack_face];
@@ -393,6 +401,10 @@ class SceneMain extends Phaser.Scene {
         } else {
             this.active_team = 0;
         }
+        this.attackLines.forEach((line) => {
+            line.destroy();
+        });
+        this.attackLines = [];
         this.resetShipActions(this.active_team);
     }
 }

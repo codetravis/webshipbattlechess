@@ -8,6 +8,7 @@ class Ship extends Phaser.GameObjects.Sprite {
         config.scene.add.existing(this);
 
         let hullStats = new HullStats();
+        this.hull_name = config.hull_name;
         this.hull = hullStats.getBaseHullStats(config.hull_name);
         this.ship_id = config.ship_id;
         this.scan_range = this.hull.scan_range;
@@ -19,6 +20,7 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.has_faced = 0;
         this.has_attacked = 0;
         this.core_stress = 0;
+        this.initiative = 0;
 
         this.setInteractive();
         this.on('pointerdown', this.clicked, this);
@@ -45,9 +47,14 @@ class Ship extends Phaser.GameObjects.Sprite {
     }
 
     prepareForAction() {
-        this.has_moved = 0;
-        this.has_faced = 0;
-        this.has_attacked = 0;
+        if(this.core_stress >= this.hull.max_core_stress) {
+            this.core_stress = Math.max(0, this.core_stress - this.hull.core_cooling * 3);
+        } else {
+            this.has_moved = 0;
+            this.has_faced = 0;
+            this.has_attacked = 0;
+            this.core_stress = Math.max(0, this.core_stress - this.hull.core_cooling);
+        }
     }
 
     hideMe() {
@@ -72,12 +79,22 @@ class Ship extends Phaser.GameObjects.Sprite {
         }
 
         if (type == "ion") {
-            this.core_stress += 10;
+            this.payCoreStress(10);
         }
     }
 
     payCoreStress(amount) {
         this.core_stress += amount;
+        if(this.core_stress > this.hull.core_stress_threshold) {
+            this.hull.core_health -= 1;
+        }
+    }
+
+    chargeShields(face) {
+        let hullStats = new HullStats();
+        let baseStats = hullStats.getBaseHullStats(this.hull_name);
+        this.hull[face + "_shield"] = Math.min(baseStats[face + "_shield"], this.hull[face + "_shield"] + 1);
+        this.payCoreStress(5);
     }
 
 }
