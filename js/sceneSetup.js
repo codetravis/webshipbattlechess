@@ -1,6 +1,6 @@
 class SceneSetup extends Phaser.Scene {
     constructor() {
-        super('SceneSetup');
+        super({ key: 'SceneSetup' });
     }
 
     preload() {
@@ -14,8 +14,16 @@ class SceneSetup extends Phaser.Scene {
 
     create() {
         this.selectedCard = null;
-        this.test_card = new StoreCard({scene: this, x: 20, y: 20, key: "light_freighter", action_name: "SET_SELECTED_HULL"});
+        this.test_card = new StoreCard({scene: this, x: 96, y: 96, key: "light_freighter", action_name: "SET_SELECTED_HULL"});
         this.credits = 300;
+
+        this.startGameButton = new UIButton({
+            scene: this,
+            x: 500,
+            y: 680,
+            action_name: "START_GAME",
+            key: "end_button",
+        });
 
         this.emitter = EventDispatcher.getInstance();
         this.emitter.on("START_GAME", this.startGame.bind(this));
@@ -28,6 +36,9 @@ class SceneSetup extends Phaser.Scene {
     }
 
     setHullSelection(selected_card) {
+        if(this.selectedCard && this.selectedCard.item_name !== selected_card.item_name) {
+            this.selectedCard.toggleSelection();
+        }
         this.selectedCard = selected_card;
         // get hull stats
         // display in view area
