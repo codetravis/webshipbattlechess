@@ -140,31 +140,30 @@ class SceneMain extends Phaser.Scene {
     }
 
     drawAttacks(ship) {
-        let max_range = 0;
-        let square_size = this.tile_size;
-        ship.hull.hard_points.forEach((hard_point) => {
-            console.log("hard point range check for: " + hard_point.name);
-            if(hard_point.turret) {
-                console.log("turret found with range " + hard_point.turret.values.range);
-                max_range = Math.max(max_range, hard_point.turret.values.range);
-                console.log("new max range " + max_range);
-            }
-        })
 
         this.attackSquares.forEach((square) => {
             square.destroy();
         })
         this.attackSquares = [];
 
-        this.allShips.forEach((target) => {
-            console.log("target team is " + target.team + " and attacker team is " + ship.team);
-            console.log("distance to target in x direction " + Math.abs(target.x - ship.x));
-            console.log("distance to target in y direction " + Math.abs(target.y - ship.y));
-            if(target.team !== ship.team && Math.abs(target.x - ship.x) <= max_range * square_size && Math.abs(target.y - ship.y) <= max_range * square_size) {
-                console.log("Drawing attack " + target.x + " " + target.y); 
-                this.attackSquares.push(new ActionSquare({scene: this, x: target.x, y: target.y, facing: 0, key: "attack_square", event_name: "ATTACK_CLICKED"}));
+        let square_size = this.tile_size;
+        ship.hull.hard_points.forEach((hard_point) => {
+            if(hard_point.turret) {
+                for(var i = 0; i <= hard_point.turret.values.range; i++) {
+                    let plus_x = ship.x + (i * this.tile_size);
+                    let minus_x = ship.x - (i * this.tile_size);
+                    
+                    for(var j = 0; j <= hard_point.turret.values.range; j++) {
+                        if (i == 0 && j == 0) {
+                            continue;
+                        }
+                        let plus_y = ship.y + (j * this.tile_size);
+                        let minus_y = ship.y - (j * this.tile_size);
+                        this.attackSquares.push(new ActionSquare({scene: this, x: plus_x, y: plus_y, facing: 0, key: "attack_square", event_name: "ATTACK_CLICKED"}));
+                    }
+                }    
             }
-        });
+        })
 
     }
 
@@ -283,6 +282,10 @@ class SceneMain extends Phaser.Scene {
             }
         });
 
+        if(!target) {
+            return;
+        }
+
         let turrets = this.turretsInRange(this.active_ship, target);
         this.performAttack(this.active_ship, target, attack_face, turrets);
         console.log("Attacked " + target.ship_id + " from " + this.active_ship.ship_id);
@@ -291,8 +294,6 @@ class SceneMain extends Phaser.Scene {
         })
         this.attackSquares = [];
         this.active_ship.has_attacked = 1;
-        // Do damage to target from active ship
-
     }
 
     performAttack(attacker, target, attack_face, turrets) {
@@ -405,6 +406,10 @@ class SceneMain extends Phaser.Scene {
             line.destroy();
         });
         this.attackLines = [];
+        this.attackSquares.forEach((square) => {
+            square.destroy();
+        })
+        this.attackSquares = [];
         this.resetShipActions(this.active_team);
     }
 }
