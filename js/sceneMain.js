@@ -159,12 +159,73 @@ class SceneMain extends Phaser.Scene {
                         }
                         let plus_y = ship.y + (j * this.tile_size);
                         let minus_y = ship.y - (j * this.tile_size);
-                        this.attackSquares.push(new ActionSquare({scene: this, x: plus_x, y: plus_y, facing: 0, key: "attack_square", event_name: "ATTACK_CLICKED"}));
+                        if(this.validateFieldOfFire(ship, {x: plus_x, y: plus_y}, hard_point)) {
+                            this.attackSquares.push(new ActionSquare({scene: this, x: plus_x, y: plus_y, facing: 0, key: "attack_square", event_name: "ATTACK_CLICKED"}));
+                        }
+                        if(this.validateFieldOfFire(ship, {x: plus_x, y: minus_y}, hard_point)) {
+                            this.attackSquares.push(new ActionSquare({scene: this, x: plus_x, y: minus_y, facing: 0, key: "attack_square", event_name: "ATTACK_CLICKED"}));
+                        }
+                        if(this.validateFieldOfFire(ship, {x: minus_x, y: plus_y}, hard_point)) {
+                            this.attackSquares.push(new ActionSquare({scene: this, x: minus_x, y: plus_y, facing: 0, key: "attack_square", event_name: "ATTACK_CLICKED"}));
+                        }
+                        if(this.validateFieldOfFire(ship, {x: minus_x, y: minus_y}, hard_point)) {
+                            this.attackSquares.push(new ActionSquare({scene: this, x: minus_x, y: minus_y, facing: 0, key: "attack_square", event_name: "ATTACK_CLICKED"}));
+                        }
                     }
                 }    
             }
         })
 
+    }
+
+    validateFieldOfFire(attacker, target, hard_point) {
+        let actual_fields_of_fire = [];
+        hard_point.fields_of_fire.forEach((field) => {
+            actual_fields_of_fire.push((field + attacker.facing) % 8);
+        });
+
+        if(this.sideOfSlope(target, attacker, 1) <= 0 && this.sideOfSlope(target, attacker, -1) <= 0) {
+            if(actual_fields_of_fire.includes(0)) {
+                return true;
+            }
+        }
+        if(this.sideOfSlope(target, attacker, 1) <= 0 && this.sideOfSlope(target, attacker, -1) >= 0) {
+            if(actual_fields_of_fire.includes(2)) {
+                return true;
+            }
+        }
+        if(this.sideOfSlope(target, attacker, 1) >= 0 && this.sideOfSlope(target, attacker, -1) >= 0) {
+            if(actual_fields_of_fire.includes(4)) {
+                return true;
+            }
+        }
+        if(this.sideOfSlope(target, attacker, 1) >= 0 && this.sideOfSlope(target, attacker, -1) <= 0) {
+            if(actual_fields_of_fire.includes(6)) {
+                return true;
+            }
+        }
+        if(target.x >= attacker.x && target.y <= attacker.y) {
+            if(actual_fields_of_fire.includes(1)) {
+                return true;
+            }
+        }
+        if(target.x >= attacker.x && target.y >= attacker.y) {
+            if(actual_fields_of_fire.includes(3)) {
+                return true;
+            }
+        }
+        if(target.x <= attacker.x && target.y >= attacker.y) {
+            if(actual_fields_of_fire.includes(5)) {
+                return true;
+            }
+        }
+        if(target.x <= attacker.x && target.y <= attacker.y) {
+            if(actual_fields_of_fire.includes(7)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     drawFacing(ship) {
