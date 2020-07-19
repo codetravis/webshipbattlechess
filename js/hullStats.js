@@ -12,6 +12,7 @@ class HullStats {
         return {
             "light_freighter": {
                 description: "The light freighter is primarily used by merchants for hauling goods but can be repurposed",
+                base_value: 50,
                 speed: 2,
                 max_turrets: 1,
                 scan_range: 2,
@@ -38,6 +39,7 @@ class HullStats {
             }, 
             "light_scout": {
                 description: "Fast but lightly armed and armored, the light scout is used for patrol and reconasaince",
+                base_value: 75,
                 speed: 3,
                 max_turrets: 2,
                 scan_range: 4,
