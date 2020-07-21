@@ -5,6 +5,7 @@ class StoreCard extends Phaser.GameObjects.Sprite {
         this.scaleY = this.scaleX;
         this.action_name = config.action_name;
         this.item_name = config.key;
+        this.item_type = config.item_type;
         config.scene.add.existing(this);
         this.selected = 0;
         this.setInteractive();

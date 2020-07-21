@@ -11,6 +11,7 @@ class HullStats {
     generateHulls() {
         return {
             "light_freighter": {
+                name: "light_freighter",
                 description: "The light freighter is primarily used by merchants for hauling goods but can be repurposed",
                 base_value: 50,
                 speed: 2,
@@ -38,6 +39,7 @@ class HullStats {
                 ]
             }, 
             "light_scout": {
+                name: "light_scout",
                 description: "Fast but lightly armed and armored, the light scout is used for patrol and reconasaince",
                 base_value: 75,
                 speed: 3,

@@ -10,6 +10,8 @@ class SceneSetup extends Phaser.Scene {
         this.load.image("attack_square", "images/attack_square.svg");
         this.load.image("end_button", "images/movement_square.svg");
         this.load.image("single_laser_cannon", "images/single_laser.png");
+        this.load.image("single_blaster_cannon", "images/single_laser.png");
+        this.load.image("single_turbolaser_cannon", "images/single_laser.png");
         this.load.image("buy_button", "images/buy_button.svg");
     }
 
@@ -18,7 +20,10 @@ class SceneSetup extends Phaser.Scene {
         // check for existing game state
         this.loadGameState();
         this.selectedCard = null;
-        this.test_card = new StoreCard({scene: this, x: 96, y: 96, key: "light_freighter", action_name: "SET_SELECTED_HULL"});
+        this.active_ship = null;
+        this.cardsInStore = [];
+        this.loadShipCards();
+        
         this.team = 1;
         this.max_teams = 2;
         this.startGameButton = new UIButton({
@@ -33,14 +38,15 @@ class SceneSetup extends Phaser.Scene {
             scene: this,
             x: 250,
             y: 480,
-            action_name: "BUY_SELECTED_HULL",
+            action_name: "BUY_SELECTED_CARD",
             key: "buy_button",
         });
 
         this.emitter = EventDispatcher.getInstance();
         this.emitter.on("START_GAME", this.startGame.bind(this));
-        this.emitter.on("SET_SELECTED_HULL", this.setHullSelection.bind(this));
-        this.emitter.on("BUY_SELECTED_HULL", this.buySelectedHull.bind(this));
+        this.emitter.on("SET_SELECTED_HULL", this.setCardSelection.bind(this));
+        this.emitter.on("SET_SELECTED_TURRET", this.setCardSelection.bind(this));
+        this.emitter.on("BUY_SELECTED_CARD", this.buySelectedCard.bind(this));
     }
 
     startGame() {
@@ -51,7 +57,42 @@ class SceneSetup extends Phaser.Scene {
         }
     }
 
-    setHullSelection(selected_card) {
+    clearStore() {
+        this.cardsInStore.forEach((card) => {
+            card.destroy();
+        });
+        this.cardsInStore = [];
+    }
+
+    loadShipCards() {
+        this.clearStore();
+        let hullStats = new HullStats();
+        console.log(hullStats.hulls);
+        let card_count = 1;
+        let card_width = 96;
+        Object.keys(hullStats.hulls).forEach((key) => {
+            let hull = hullStats.getBaseHullStats(key);
+            let test_card = new StoreCard({scene: this, x: card_width * card_count, y: card_width, key: hull.name, action_name: "SET_SELECTED_HULL", item_type: "hull"});
+            this.cardsInStore.push(test_card);
+            card_count++;
+        });
+        
+    }
+
+    loadTurretCards() {
+        this.clearStore();
+        let turretStats = new TurretStats();
+        let card_count = 1;
+        let card_width = 96;
+        Object.keys(turretStats.turrets).forEach((key) => {
+            let turret = turretStats.getBaseTurretStats(key);
+            let test_card = new StoreCard({scene: this, x: card_width * card_count, y: card_width, key: turret.name, action_name: "SET_SELECTED_TURRET", item_type: "turret"});
+            this.cardsInStore.push(test_card);
+            card_count++;
+        });
+    }
+
+    setCardSelection(selected_card) {
         if(this.selectedCard && this.selectedCard.item_name !== selected_card.item_name) {
             this.selectedCard.toggleSelection();
         }
@@ -60,8 +101,8 @@ class SceneSetup extends Phaser.Scene {
         // display in view area
     }
 
-    buySelectedHull() {
-        if(this.selectedCard) {
+    buySelectedCard() {
+        if(this.selectedCard && this.selectedCard.item_type == "hull") {
             let next_ship_id = this.gameState.last_ship_id + 1;
             let new_ship = new Ship({ 
                 scene: this, 
@@ -73,12 +114,20 @@ class SceneSetup extends Phaser.Scene {
                 ship_id: next_ship_id
             });
 
-            if(this.gameState["team_" + this.team + "_credits"] >= new_ship.hull.value) {
-                this.gameState["team_" + this.team + "_credits"] -= new_ship.hull.value;
-                // add ship to fleet
+            console.log(this.gameState["team_" + this.team + "_credits"]);
+            console.log(new_ship.hull.base_value);
+            if(this.gameState["team_" + this.team + "_credits"] >= new_ship.hull.base_value) {
+                this.gameState["team_" + this.team + "_credits"] -= new_ship.hull.base_value;
+                this.gameState["team_" + this.team + "_fleet"][new_ship.ship_id] = new_ship;
+                // transition to outfitting ship with weapons
+                this.active_ship = this.gameState["team_" + this.team + "_fleet"][new_ship.ship_id];
+                this.loadTurretCards();
             } else {
+                new_ship.destroy();
                 console.log("Not enough credits");
             }
+        } else if(this.selectedCard && this.selectedCard.item_type == "turret") {
+            // 
         }
     }
 
@@ -89,8 +138,8 @@ class SceneSetup extends Phaser.Scene {
         } else {
             this.gameState = {
                 last_ship_id: 0,
-                team_one_credits: 300,
-                team_two_credits: 300,
+                team_1_credits: 300,
+                team_2_credits: 300,
                 team_1_fleet: {},
                 team_2_fleet: {}
             };

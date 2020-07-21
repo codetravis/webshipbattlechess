@@ -11,6 +11,7 @@ class TurretStats {
     generateTurrets() {
         return {
             "single_laser_cannon": {
+                name: "single_laser_cannon",
                 description: "Medium range and good damage to power ratio, the laser cannon is a core part of a well rounded ships weapons compliment",
                 damage_type: "energy",
                 damage: 3,
@@ -20,6 +21,7 @@ class TurretStats {
                 power_cost: 10,
             }, 
             "single_blaster_cannon": {
+                name: "single_blaster_cannon",
                 description: "Short range but quick firing, the blaster cannon is devastating up close but has a high power cost",
                 damage_type: "energy",
                 damage: 2,
@@ -29,6 +31,7 @@ class TurretStats {
                 power_cost: 30,
             },
             "single_turbolaser_cannon": {
+                name: "single_turbolaser_cannon",
                 description: "Higher power and higher range but also at extreme cost, turbo lasers are the choice for dealing with tougher targets",
                 damage_type: "energy",
                 damage: 8,
