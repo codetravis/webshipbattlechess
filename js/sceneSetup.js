@@ -13,6 +13,7 @@ class SceneSetup extends Phaser.Scene {
         this.load.image("single_blaster_turret", "images/single_laser.png");
         this.load.image("single_turbolaser_turret", "images/single_laser.png");
         this.load.image("buy_button", "images/buy_button.svg");
+        this.load.image("done_button", "images/done_button.svg");
     }
 
     create() {
@@ -26,6 +27,9 @@ class SceneSetup extends Phaser.Scene {
         
         this.team = 1;
         this.max_teams = 2;
+        this.tile_size = 32;
+        this.map_width = 640;
+        this.map_height = 640;
         this.startGameButton = new UIButton({
             scene: this,
             x: 500,
@@ -42,17 +46,29 @@ class SceneSetup extends Phaser.Scene {
             key: "buy_button",
         });
 
+        this.doneButton = new UIButton({
+            scene: this,
+            x: 450,
+            y: 480,
+            action_name: "DONE_WITH_SHIP",
+            key: "done_button",
+        });
+
         this.emitter = EventDispatcher.getInstance();
         this.emitter.on("START_GAME", this.startGame.bind(this));
         this.emitter.on("SET_SELECTED_HULL", this.setCardSelection.bind(this));
         this.emitter.on("SET_SELECTED_TURRET", this.setCardSelection.bind(this));
         this.emitter.on("BUY_SELECTED_CARD", this.buySelectedCard.bind(this));
+        this.emitter.on("DONE_WITH_SHIP", this.loadShipCards.bind(this));
     }
 
     startGame() {
         if(this.team < this.max_teams) {
+            console.log("Next team's setup begins");
             this.team++;
+            this.loadShipCards();
         } else {
+            this.saveGameState();
             this.scene.start('SceneMain');
         }
     }
@@ -107,10 +123,10 @@ class SceneSetup extends Phaser.Scene {
             let new_ship = new Ship({ 
                 scene: this, 
                 x: next_ship_id * 32, 
-                y: 500,
+                y: this.tile_size + (this.team - 1) * (this.map_height - this.tile_size),
                 hull_name: this.selectedCard.item_name,
                 team: this.team, 
-                facing: 0, 
+                facing: (this.team * 4) % 8, 
                 ship_id: next_ship_id
             });
 
@@ -121,13 +137,32 @@ class SceneSetup extends Phaser.Scene {
                 this.gameState["team_" + this.team + "_fleet"][new_ship.ship_id] = new_ship;
                 // transition to outfitting ship with weapons
                 this.active_ship = this.gameState["team_" + this.team + "_fleet"][new_ship.ship_id];
+                this.gameState.last_ship_id = next_ship_id;
                 this.loadTurretCards();
             } else {
                 new_ship.destroy();
                 console.log("Not enough credits");
             }
         } else if(this.selectedCard && this.selectedCard.item_type == "turret") {
-            // 
+            // assign turret to ship
+            let new_turret = new Turret({
+                scene: this,
+                x: 0,
+                y: 0,
+                key: this.selectedCard.item_name
+            });
+
+            if(this.gameState["team_" + this.team + "_credits"] >= new_turret.values.base_value) {
+
+                this.active_ship.hull.hard_points.forEach((hard_point) => {
+                    if(!hard_point.turret && new_turret) {
+                        this.gameState["team_" + this.team + "_credits"] -= new_turret.values.base_value;
+                        hard_point.turret = new_turret;
+                        console.log("Adding turret " + new_turret.values.name + " to hard point " + hard_point.id);
+                        new_turret = null;
+                    }
+                });
+            }
         }
     }
 
@@ -138,8 +173,9 @@ class SceneSetup extends Phaser.Scene {
         } else {
             this.gameState = {
                 last_ship_id: 0,
-                team_1_credits: 300,
-                team_2_credits: 300,
+                teams: 2,
+                team_1_credits: 3000,
+                team_2_credits: 3000,
                 team_1_fleet: {},
                 team_2_fleet: {}
             };
@@ -148,6 +184,8 @@ class SceneSetup extends Phaser.Scene {
     }
 
     saveGameState() {
+        // turn ships and turrets into saveable objects before storing in game state
+        
         let gameStateString = JSON.stringify(this.gameState);
         localStorage.setItem('game', gameStateString);
     }

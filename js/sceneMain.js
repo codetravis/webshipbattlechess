@@ -15,7 +15,7 @@ class SceneMain extends Phaser.Scene {
     }
 
     create() {
-        this.active_team = 0;
+        this.active_team = 1;
         this.map_width = 640;
         this.map_height = 640;
         this.tile_size = 32;
@@ -32,46 +32,7 @@ class SceneMain extends Phaser.Scene {
             y: 680,
             action_name: "END_TURN",
             key: "end_button",
-        });
-        
-        this.test_ship = new Ship({ 
-            scene: this, 
-            x: 32 * 10, 
-            y: 32 * 10,
-            hull_name: "light_freighter", 
-            team: 0, 
-            facing: 0, 
-            ship_id: 1
-        });
-        this.test_ship.addTurret(0, "single_turbolaser_turret");
-        this.allShips.push(this.test_ship);
-
-        this.test_ship_two = new Ship({ 
-            scene: this, 
-            x: this.tile_size * 5, 
-            y: this.tile_size * 5,
-            hull_name: "light_freighter",
-            team: 0, 
-            facing: 0, 
-            ship_id: 2
-        });
-        this.test_ship_two.addTurret(0, "single_blaster_turret");
-
-        this.allShips.push(this.test_ship_two);
-
-        this.test_ship_three = new Ship({ 
-            scene: this, 
-            x: this.tile_size * 2, 
-            y: this.tile_size * 2,
-            hull_name: "light_scout", 
-            team: 1, 
-            facing: 4, 
-            ship_id: 3
-        });
-        this.test_ship_three.addTurret(0, "single_laser_turret");
-        this.test_ship_three.addTurret(1, "single_turbolaser_turret");
-
-        this.allShips.push(this.test_ship_three);
+        });       
         
         this.emitter = EventDispatcher.getInstance();
         this.emitter.on("SHIP_CLICKED", this.setActiveShip.bind(this));
@@ -81,7 +42,74 @@ class SceneMain extends Phaser.Scene {
         this.emitter.on("ATTACK_CLICKED", this.attackTargetShip.bind(this));
         this.emitter.on("END_TURN", this.endTurn.bind(this));
 
+        this.loadInitialGameState();
+
         this.resetShipActions(this.active_team);
+    }
+
+    loadInitialGameState() {
+        let gameStateString = localStorage.getItem('game');
+        if(gameStateString) {
+            this.gameState = JSON.parse(gameStateString);
+            console.log(this.gameState);
+            for(var i = 1; i <= this.gameState.teams; i++) {
+                Object.keys(this.gameState["team_" + i + "_fleet"]).forEach((ship_id) => {
+                    let ship_info = this.gameState["team_" + i + "_fleet"][ship_id];
+                    let next_ship = new Ship({
+                        scene: this,
+                        x: ship_info.x,
+                        y: ship_info.y,
+                        hull_name: ship_info.hull_name,
+                        team: ship_info.team,
+                        facing: ship_info.facing,
+                        ship_id: ship_id
+                    });
+                    next_ship.restoreFromSaveObject(ship_info);
+                    console.log("created new ship " + ship_id);
+                    this.allShips.push(next_ship);
+                });
+            }
+        } else {
+            // load a test state
+            this.test_ship = new Ship({ 
+                scene: this, 
+                x: 32 * 10, 
+                y: 32 * 10,
+                hull_name: "light_freighter", 
+                team: 0, 
+                facing: 0, 
+                ship_id: 1
+            });
+            this.test_ship.addTurret(0, "single_turbolaser_turret");
+            this.allShips.push(this.test_ship);
+    
+            this.test_ship_two = new Ship({ 
+                scene: this, 
+                x: this.tile_size * 5, 
+                y: this.tile_size * 5,
+                hull_name: "light_freighter",
+                team: 0, 
+                facing: 0, 
+                ship_id: 2
+            });
+            this.test_ship_two.addTurret(0, "single_blaster_turret");
+    
+            this.allShips.push(this.test_ship_two);
+    
+            this.test_ship_three = new Ship({ 
+                scene: this, 
+                x: this.tile_size * 2, 
+                y: this.tile_size * 2,
+                hull_name: "light_scout", 
+                team: 1, 
+                facing: 4, 
+                ship_id: 3
+            });
+            this.test_ship_three.addTurret(0, "single_laser_turret");
+            this.test_ship_three.addTurret(1, "single_turbolaser_turret");
+    
+            this.allShips.push(this.test_ship_three);
+        }
     }
 
     update() {
@@ -483,10 +511,10 @@ class SceneMain extends Phaser.Scene {
     }
 
     endTurn() {
-        if(this.active_team == 0) {
-            this.active_team = 1;
+        if(this.active_team == 1) {
+            this.active_team = 2;
         } else {
-            this.active_team = 0;
+            this.active_team = 1;
         }
         this.attackLines.forEach((line) => {
             line.destroy();

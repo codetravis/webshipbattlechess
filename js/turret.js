@@ -6,4 +6,8 @@ class Turret extends Phaser.GameObjects.Sprite {
         this.values = turretStats.getBaseTurretStats(config.key);
 
     }
+
+    saveableObject() {
+        return this.values;
+    }
 }
