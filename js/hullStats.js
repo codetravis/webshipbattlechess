@@ -15,6 +15,7 @@ class HullStats {
                 description: "The light freighter is primarily used by merchants for hauling goods but can be repurposed",
                 base_value: 50,
                 speed: 2,
+                turning: 1,
                 max_turrets: 1,
                 scan_range: 2,
                 front_armor: 5,
@@ -29,6 +30,7 @@ class HullStats {
                 max_core_stress: 70,
                 core_stress_threshold: 50,
                 core_cooling: 15,
+                shield_generator: 1,
                 hard_points: [
                     {
                         id: 0,
@@ -43,6 +45,7 @@ class HullStats {
                 description: "Fast but lightly armed and armored, the light scout is used for patrol and reconasaince",
                 base_value: 75,
                 speed: 3,
+                turning: 2,
                 max_turrets: 2,
                 scan_range: 4,
                 front_armor: 6,
@@ -57,6 +60,7 @@ class HullStats {
                 max_core_stress: 100,
                 core_stress_threshold: 60,
                 core_cooling: 20,
+                shield_generator: 2,
                 hard_points: [
                     {
                         id: 0,

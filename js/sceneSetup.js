@@ -9,9 +9,9 @@ class SceneSetup extends Phaser.Scene {
         this.load.image("move_square", "images/movement_square.svg");
         this.load.image("attack_square", "images/attack_square.svg");
         this.load.image("end_button", "images/movement_square.svg");
-        this.load.image("single_laser_cannon", "images/single_laser.png");
-        this.load.image("single_blaster_cannon", "images/single_laser.png");
-        this.load.image("single_turbolaser_cannon", "images/single_laser.png");
+        this.load.image("single_laser_turret", "images/single_laser.png");
+        this.load.image("single_blaster_turret", "images/single_laser.png");
+        this.load.image("single_turbolaser_turret", "images/single_laser.png");
         this.load.image("buy_button", "images/buy_button.svg");
     }
 

@@ -9,7 +9,9 @@ class SceneMain extends Phaser.Scene {
         this.load.image("move_square", "images/movement_square.svg");
         this.load.image("attack_square", "images/attack_square.svg");
         this.load.image("end_button", "images/movement_square.svg");
-        this.load.image("single_laser_cannon", "images/single_laser.png");
+        this.load.image("single_laser_turret", "images/single_laser.png");
+        this.load.image("single_blaster_turret", "images/single_laser.png");
+        this.load.image("single_turbolaser_turret", "images/single_laser.png");
     }
 
     create() {
@@ -32,34 +34,42 @@ class SceneMain extends Phaser.Scene {
             key: "end_button",
         });
         
-        this.test_ship = new Ship({ scene: this, 
-                                    x: 32 * 10, 
-                                    y: 32 * 10,
-                                    hull_name: "light_freighter", 
-                                    team: 0, 
-                                    facing: 0, 
-                                    ship_id: 1});
-
+        this.test_ship = new Ship({ 
+            scene: this, 
+            x: 32 * 10, 
+            y: 32 * 10,
+            hull_name: "light_freighter", 
+            team: 0, 
+            facing: 0, 
+            ship_id: 1
+        });
+        this.test_ship.addTurret(0, "single_turbolaser_turret");
         this.allShips.push(this.test_ship);
 
-        this.test_ship_two = new Ship({ scene: this, 
+        this.test_ship_two = new Ship({ 
+            scene: this, 
             x: this.tile_size * 5, 
             y: this.tile_size * 5,
             hull_name: "light_freighter",
             team: 0, 
             facing: 0, 
-            ship_id: 2});
+            ship_id: 2
+        });
+        this.test_ship_two.addTurret(0, "single_blaster_turret");
 
         this.allShips.push(this.test_ship_two);
 
-        this.test_ship_three = new Ship({ scene: this, 
+        this.test_ship_three = new Ship({ 
+            scene: this, 
             x: this.tile_size * 2, 
             y: this.tile_size * 2,
             hull_name: "light_scout", 
             team: 1, 
             facing: 4, 
-            ship_id: 3});
-        this.test_ship_three.addTurret(0, "single_laser_cannon");
+            ship_id: 3
+        });
+        this.test_ship_three.addTurret(0, "single_laser_turret");
+        this.test_ship_three.addTurret(1, "single_turbolaser_turret");
 
         this.allShips.push(this.test_ship_three);
         
@@ -88,16 +98,10 @@ class SceneMain extends Phaser.Scene {
         if(this.active_team == ship.team) {
             console.log(ship.ship_id + " " + ship.x + " " + ship.y);
             console.log(ship.hull.core_health);
+
+            this.clearActionSquares();
+
             this.active_ship = ship;
-            this.movementSquares.forEach((square) => {
-                square.destroy();
-            });
-            this.facingSquares.forEach((square) => {
-                square.destroy();
-            });
-            this.attackSquares.forEach((square) => {
-                square.destroy();
-            });
 
             if (this.active_ship.has_moved === 0) {
                 this.drawMovement(ship);
@@ -108,6 +112,18 @@ class SceneMain extends Phaser.Scene {
                 this.drawAttacks(ship);
             }
         }
+    }
+
+    clearActionSquares() {
+        this.movementSquares.forEach((square) => {
+            square.destroy();
+        });
+        this.facingSquares.forEach((square) => {
+            square.destroy();
+        });
+        this.attackSquares.forEach((square) => {
+            square.destroy();
+        });
     }
 
     drawMovement(ship) {
@@ -358,14 +374,23 @@ class SceneMain extends Phaser.Scene {
     }
 
     performAttack(attacker, target, attack_face, turrets) {
+        let number_of_shots = 1;
         turrets.forEach((turret) => {
             let new_attack_line = new AttackLine({scene: this, attacker: attacker, target: target, attack_type: "laser", lifespan: 200});
             this.attackLines.push(new_attack_line);
             console.log("Attacking face " + attack_face + " of " + target.ship_id);
-            target.receiveDamage(turret.values.damage, turret.values.damage_type, attack_face);
-            console.log(attack_face  + "Shields are " + target.hull[attack_face + "_shield"]);
-            console.log(attack_face + "Armor is " + target.hull[attack_face + "_armor"]);
-            console.log("Core Health is " + target.hull.core_health);
+            for(var i = 0; i < turret.values.attacks_per_round; i++) {
+                let hit_roll = Math.random();
+                console.log("Hit roll was " + hit_roll);
+                if(hit_roll <= turret.values.ship_accuracy) {
+                    target.receiveDamage(turret.values.damage, turret.values.damage_type, attack_face);
+                    console.log(attack_face  + "Shields are " + target.hull[attack_face + "_shield"]);
+                    console.log(attack_face + "Armor is " + target.hull[attack_face + "_armor"]);
+                    console.log("Core Health is " + target.hull.core_health);
+                } else {
+                    console.log("Attack with " + turret.values.name + " missed");
+                }
+            }
             attacker.payCoreStress(turret.power_cost);
         });
 
