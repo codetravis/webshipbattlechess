@@ -139,7 +139,9 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.initiative = saveObject.initiative;
         this.hull = saveObject.hull;
         this.hull.hard_points.forEach((hard_point) => {
-            this.addTurret(hard_point.id, hard_point.turret.name);
+            if(hard_point.turret) {
+                this.addTurret(hard_point.id, hard_point.turret.name);
+            }
         });
     }
 

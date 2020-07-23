@@ -1,8 +1,8 @@
 class UIButton extends Phaser.GameObjects.Image {
     constructor(config) {
         super(config.scene, config.x, config.y, config.key);
-        this.displayWidth = 96;
-        this.displayHeight = 48;
+        this.displayWidth = config.display_width;
+        this.displayHeight = config.display_height;
         this.action_name = config.action_name;
         config.scene.add.existing(this);
         this.setInteractive();

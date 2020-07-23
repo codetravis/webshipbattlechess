@@ -12,12 +12,15 @@ class SceneMain extends Phaser.Scene {
         this.load.image("single_laser_turret", "images/single_laser.png");
         this.load.image("single_blaster_turret", "images/single_laser.png");
         this.load.image("single_turbolaser_turret", "images/single_laser.png");
+        this.load.image("move_action_button", "images/move_action_button.svg");
+        this.load.image("turn_action_button", "images/turn_action_button.svg");
+        this.load.image("attack_action_button", "images/attack_action_button.svg");
     }
 
     create() {
         this.active_team = 1;
-        this.map_width = 640;
-        this.map_height = 640;
+        this.map_width = 608;
+        this.map_height = 608;
         this.tile_size = 32;
         this.allShips = [];
         this.active_ship = null;
@@ -26,17 +29,13 @@ class SceneMain extends Phaser.Scene {
         this.facingSquares = [];
         this.attackLines = [];
 
-        this.end_turn_button = new UIButton({
-            scene: this,
-            x: 500,
-            y: 680,
-            action_name: "END_TURN",
-            key: "end_button",
-        });       
+        this.createUIButtons();      
         
         this.emitter = EventDispatcher.getInstance();
         this.emitter.on("SHIP_CLICKED", this.setActiveShip.bind(this));
-
+        this.emitter.on("MOVE_ACTION_SELECTED", this.showMoveActions.bind(this));
+        this.emitter.on("TURN_ACTION_SELECTED", this.showTurnActions.bind(this));
+        this.emitter.on("ATTACK_ACTION_SELECTED", this.showAttackActions.bind(this));
         this.emitter.on("MOVE_CLICKED", this.moveActiveShip.bind(this));
         this.emitter.on("FACE_CLICKED", this.faceActiveShip.bind(this));
         this.emitter.on("ATTACK_CLICKED", this.attackTargetShip.bind(this));
@@ -45,6 +44,46 @@ class SceneMain extends Phaser.Scene {
         this.loadInitialGameState();
 
         this.resetShipActions(this.active_team);
+    }
+
+    createUIButtons() {
+        this.end_turn_button = new UIButton({
+            scene: this,
+            x: 500,
+            y: 680,
+            action_name: "END_TURN",
+            key: "end_button",
+            display_width: 96,
+            display_height: 48
+        });
+
+        this.move_action_button = new UIButton({
+            scene: this,
+            x: 50,
+            y: 680,
+            action_name: "MOVE_ACTION_SELECTED",
+            key: "move_action_button",
+            display_width: 96,
+            display_height: 96,
+        });
+        this.turn_action_button = new UIButton({
+            scene: this,
+            x: 150,
+            y: 680,
+            action_name: "TURN_ACTION_SELECTED",
+            key: "turn_action_button",
+            display_width: 96,
+            display_height: 96,
+        });
+        this.attack_action_button = new UIButton({
+            scene: this,
+            x: 250,
+            y: 680,
+            action_name: "ATTACK_ACTION_SELECTED",
+            key: "attack_action_button",
+            display_width: 96,
+            display_height: 96,
+        });
     }
 
     loadInitialGameState() {
@@ -130,15 +169,27 @@ class SceneMain extends Phaser.Scene {
             this.clearActionSquares();
 
             this.active_ship = ship;
+        }
+    }
 
-            if (this.active_ship.has_moved === 0) {
-                this.drawMovement(ship);
-            } else if (this.active_ship.has_faced === 0) {
-                this.drawFacing(ship);
-            } else if (this.active_ship.has_attacked === 0) {
-                console.log("drawing  attacks");
-                this.drawAttacks(ship);
-            }
+    showMoveActions() {
+        this.clearActionSquares();
+        if (this.active_ship && this.active_ship.has_moved === 0) {
+            this.drawMovement(this.active_ship);
+        }
+    }
+
+    showTurnActions() {
+        this.clearActionSquares();
+        if (this.active_ship && this.active_ship.has_faced === 0) {
+            this.drawFacing(this.active_ship);
+        }
+    }
+
+    showAttackActions() {
+        this.clearActionSquares();
+        if (this.active_ship && this.active_ship.has_attacked === 0) {
+            this.drawAttacks(this.active_ship);
         }
     }
 
@@ -155,6 +206,7 @@ class SceneMain extends Phaser.Scene {
     }
 
     drawMovement(ship) {
+        // TODO modify for only forward movement after adding turn action button
         this.movementSquares = [];
         if(ship.has_moved === 0) {
             for( var i = 0; i <= ship.speed; i++) {
@@ -306,7 +358,7 @@ class SceneMain extends Phaser.Scene {
     validateMove(target_x, target_y, moving_ship) {
         let valid = true;
         this.allShips.forEach((ship) => {
-            if(target_x == ship.x && target_y == ship.y) {
+            if(target_x == ship.x && target_y == ship.y && ship.hull.core_health > 0) {
                 valid = false;
             }
         });
@@ -381,7 +433,10 @@ class SceneMain extends Phaser.Scene {
         let target = null;
         let attack_face = null;
         this.allShips.forEach((ship) => {
-            if(ship.team !== this.active_ship.team && ship.x === targetSquare.x && ship.y === targetSquare.y) {
+            if(ship.team !== this.active_ship.team && 
+                ship.visible &&
+                ship.x === targetSquare.x && 
+                ship.y === targetSquare.y) {
                 target = ship;
                 attack_face = this.determineAttackFace(this.active_ship, target);
             }

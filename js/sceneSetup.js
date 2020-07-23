@@ -28,14 +28,16 @@ class SceneSetup extends Phaser.Scene {
         this.team = 1;
         this.max_teams = 2;
         this.tile_size = 32;
-        this.map_width = 640;
-        this.map_height = 640;
+        this.map_width = 608;
+        this.map_height = 608;
         this.startGameButton = new UIButton({
             scene: this,
             x: 500,
             y: 680,
             action_name: "START_GAME",
             key: "end_button",
+            display_width: 96,
+            display_height: 48
         });
 
         this.buyButton = new UIButton({
@@ -44,6 +46,8 @@ class SceneSetup extends Phaser.Scene {
             y: 480,
             action_name: "BUY_SELECTED_CARD",
             key: "buy_button",
+            display_width: 96,
+            display_height: 48
         });
 
         this.doneButton = new UIButton({
@@ -52,6 +56,8 @@ class SceneSetup extends Phaser.Scene {
             y: 480,
             action_name: "DONE_WITH_SHIP",
             key: "done_button",
+            display_width: 96,
+            display_height: 48
         });
 
         this.emitter = EventDispatcher.getInstance();
