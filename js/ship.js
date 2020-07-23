@@ -22,6 +22,7 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.core_stress = 0;
         this.initiative = 0;
         this.shield_generation = 0;
+        this.data_object = 0;
 
         this.setInteractive();
         this.on('pointerdown', this.clicked, this);
@@ -77,7 +78,7 @@ class Ship extends Phaser.GameObjects.Sprite {
         } else if(this.hull[face + "_armor"] > 0) {
             this.hull[face + "_armor"] = Math.max(0, this.hull[face + "_armor"] - amount);
         } else {
-            this.hull.core_health = Math.max(0, this.core_health - amount);
+            this.hull.core_health = Math.max(0, this.hull.core_health - amount);
         }
 
         if (type == "ion") {
@@ -103,6 +104,12 @@ class Ship extends Phaser.GameObjects.Sprite {
     }
 
     saveableObject() {
+        let temp_hull = this.hull;
+        temp_hull.hard_points.forEach((hard_point) => {
+            if(hard_point.turret) {
+                hard_point.turret = hard_point.turret.saveableObject();
+            }
+        })
         return {
             hull_name: this.hull_name, 
             hull: this.hull,
@@ -116,7 +123,8 @@ class Ship extends Phaser.GameObjects.Sprite {
             has_attacked: this.has_attacked,
             shield_generation: this.shield_generation,
             core_stress: this.core_stress,
-            initiative: this.initiative
+            initiative: this.initiative,
+            data_object: 1,
         }
     }
 
@@ -130,6 +138,9 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.shield_generation = saveObject.shield_generation;
         this.initiative = saveObject.initiative;
         this.hull = saveObject.hull;
+        this.hull.hard_points.forEach((hard_point) => {
+            this.addTurret(hard_point.id, hard_point.turret.name);
+        });
     }
 
 }

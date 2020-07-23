@@ -185,7 +185,13 @@ class SceneSetup extends Phaser.Scene {
 
     saveGameState() {
         // turn ships and turrets into saveable objects before storing in game state
-        
+        for(var i = 1; i <= this.max_teams; i++) {
+            Object.keys(this.gameState["team_" + i + "_fleet"]).forEach((ship_id) => {
+                if(this.gameState["team_" + i + "_fleet"][ship_id].data_object === 0) {
+                    this.gameState["team_" + i + "_fleet"][ship_id] = this.gameState["team_" + i + "_fleet"][ship_id].saveableObject();
+                }
+            });
+        }
         let gameStateString = JSON.stringify(this.gameState);
         localStorage.setItem('game', gameStateString);
     }
