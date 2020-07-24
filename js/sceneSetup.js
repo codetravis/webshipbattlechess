@@ -6,6 +6,7 @@ class SceneSetup extends Phaser.Scene {
     preload() {
         this.load.image("light_freighter", "images/light_freighter.svg");
         this.load.image("light_scout", "images/light_scout.svg");
+        this.load.image("wedge_destroyer", "images/wedge_destroyer.svg");
         this.load.image("move_square", "images/movement_square.svg");
         this.load.image("attack_square", "images/attack_square.svg");
         this.load.image("end_button", "images/movement_square.svg");

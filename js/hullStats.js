@@ -60,7 +60,7 @@ class HullStats {
                 max_core_stress: 100,
                 core_stress_threshold: 60,
                 core_cooling: 20,
-                shield_generator: 2,
+                shield_generator: 1,
                 hard_points: [
                     {
                         id: 0,
@@ -74,6 +74,60 @@ class HullStats {
                         fields_of_fire: [0, 1, 2, 6, 7],
                         turret: null,
                     }
+                ]
+            },
+            "wedge_destroyer": {
+                name: "wedge_destroyer",
+                description: "The Wedge packs immense firepower for its size. All turrets overlap fields of fire in the forward arc",
+                base_value: 1000,
+                speed: 2,
+                turning: 2,
+                max_turrets: 5,
+                scan_range: 3,
+                front_armor: 10,
+                right_armor: 8,
+                left_armor: 8,
+                rear_armor: 6,
+                front_shield: 10,
+                right_shield: 8,
+                left_shield: 8,
+                rear_shield: 6,
+                core_health: 20,
+                max_core_stress: 150,
+                core_stress_threshold: 100,
+                core_cooling: 40,
+                shield_generator: 2,
+                hard_points: [
+                    {
+                        id: 0,
+                        name: "Nose Turret",
+                        fields_of_fire: [0],
+                        turret: null,
+                    },
+                    {
+                        id: 1,
+                        name: "Left Front Turret",
+                        fields_of_fire: [0, 6, 7],
+                        turret: null,
+                    },
+                    {
+                        id: 2,
+                        name: "Right Front Turret",
+                        fields_of_fire: [0, 1, 2],
+                        turret: null,
+                    },
+                    {
+                        id: 3,
+                        name: "Left Mid Turret",
+                        fields_of_fire: [0, 6, 7],
+                        turret: null,
+                    },
+                    {
+                        id: 4,
+                        name: "Right Mid Turret",
+                        fields_of_fire: [0, 1, 2],
+                        turret: null,
+                    },
                 ]
             },
         }

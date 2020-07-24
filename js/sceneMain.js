@@ -6,6 +6,7 @@ class SceneMain extends Phaser.Scene {
     preload() {
         this.load.image("light_freighter", "images/light_freighter.svg");
         this.load.image("light_scout", "images/light_scout.svg");
+        this.load.image("wedge_destroyer", "images/wedge_destroyer.svg");
         this.load.image("move_square", "images/movement_square.svg");
         this.load.image("attack_square", "images/attack_square.svg");
         this.load.image("end_button", "images/movement_square.svg");
@@ -188,6 +189,7 @@ class SceneMain extends Phaser.Scene {
                     if (i == 0 && j == 0) {
                         continue;
                     }
+
                     let plus_y = ship.y + (j * this.tile_size);
                     let minus_y = ship.y - (j * this.tile_size);
                     if(this.validateMove(plus_x, plus_y, ship)) {
@@ -297,9 +299,36 @@ class SceneMain extends Phaser.Scene {
     }
 
     drawFacing(ship) {
+        // TODO: refactor
         this.facingSquares = [];
         let square_size = 32;
         if(ship.has_faced === 0) {
+            if(ship.hull.turning === 1) {
+                if([0, 1, 7].includes(ship.facing)) {
+                    this.facingSquares.push(new ActionSquare({scene: this, x: ship.x, y: ship.y - square_size, facing: 0, key: "move_square", event_name: "FACE_CLICKED"}));
+                }
+                if([1, 2, 0].includes(ship.facing)) {
+                    this.facingSquares.push(new ActionSquare({scene: this, x: ship.x + square_size, y: ship.y - square_size, facing: 1, key: "move_square", event_name: "FACE_CLICKED"}));
+                }
+                if([2, 3, 1].includes(ship.facing)) {
+                    this.facingSquares.push(new ActionSquare({scene: this, x: ship.x + square_size, y: ship.y, facing: 2, key: "move_square", event_name: "FACE_CLICKED"}));
+                }
+                if([3, 4, 2].includes(ship.facing)) {
+                    this.facingSquares.push(new ActionSquare({scene: this, x: ship.x + square_size, y: ship.y + square_size, facing: 3, key: "move_square", event_name: "FACE_CLICKED"}));
+                }
+                if([4, 5, 3].includes(ship.facing)) {
+                    this.facingSquares.push(new ActionSquare({scene: this, x: ship.x, y: ship.y + square_size, facing: 4, key: "move_square", event_name: "FACE_CLICKED"}));
+                }
+                if([5, 6, 4].includes(ship.facing)) {
+                    this.facingSquares.push(new ActionSquare({scene: this, x: ship.x - square_size, y: ship.y + square_size, facing: 5, key: "move_square", event_name: "FACE_CLICKED"}));
+                }
+                if([6, 7, 5].includes(ship.facing)) {
+                    this.facingSquares.push(new ActionSquare({scene: this, x: ship.x - square_size, y: ship.y, facing: 6, key: "move_square", event_name: "FACE_CLICKED"}));
+                }
+                if([7, 0, 6].includes(ship.facing)) {
+                    this.facingSquares.push(new ActionSquare({scene: this, x: ship.x - square_size, y: ship.y - square_size, facing: 7, key: "move_square", event_name: "FACE_CLICKED"}));
+                }
+            } else if(ship.hull.turning === 2) {
                 if([0, 1, 2, 6, 7].includes(ship.facing)) {
                     this.facingSquares.push(new ActionSquare({scene: this, x: ship.x, y: ship.y - square_size, facing: 0, key: "move_square", event_name: "FACE_CLICKED"}));
                 }
@@ -324,7 +353,9 @@ class SceneMain extends Phaser.Scene {
                 if([7, 0, 1, 5, 6].includes(ship.facing)) {
                     this.facingSquares.push(new ActionSquare({scene: this, x: ship.x - square_size, y: ship.y - square_size, facing: 7, key: "move_square", event_name: "FACE_CLICKED"}));
                 }
+            }
         }
+        
     }
 
     validateMove(target_x, target_y, moving_ship) {
@@ -433,10 +464,10 @@ class SceneMain extends Phaser.Scene {
     }
 
     performAttack(attacker, target, attack_face, turrets) {
-        let number_of_shots = 1;
+        let attack_offset = 1;
         turrets.forEach((turret) => {
-            let new_attack_line = new AttackLine({scene: this, attacker: attacker, target: target, attack_type: turret.values.damage_type, lifespan: 200, offset: number_of_shots});
-            number_of_shots += 1;
+            let new_attack_line = new AttackLine({scene: this, attacker: attacker, target: target, attack_name: turret.values.name, lifespan: 200, offset: attack_offset});
+            attack_offset += 2;
             this.attackLines.push(new_attack_line);
             console.log("Attacking face " + attack_face + " of " + target.ship_id);
             for(var i = 0; i < turret.values.attacks_per_round; i++) {
@@ -552,10 +583,7 @@ class SceneMain extends Phaser.Scene {
             line.destroy();
         });
         this.attackLines = [];
-        this.attackSquares.forEach((square) => {
-            square.destroy();
-        })
-        this.attackSquares = [];
+        this.clearActionSquares();
         this.resetShipActions(this.active_team);
     }
 }

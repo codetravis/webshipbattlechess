@@ -2,13 +2,16 @@ class AttackLine extends Phaser.GameObjects.Line {
 
     constructor(config) {
         let stroke_color = 0;
-        if(config.attack_type === "laser") {
+        if(config.attack_name.includes("laser")) {
             stroke_color = 0x00ff00;
-        } else if (config.attack_type === "ion") {
+        }
+        if (config.attack_name.includes("ion")) {
             stroke_color = 0xff00ff;
-        } else if (config.attack_type === "blaster") {
+        }
+        if (config.attack_name.includes("blaster")) {
             stroke_color = 0xff0000;
-        } else if (config.attack_type === "turbolaser") {
+        }
+        if (config.attack_name.includes("turbolaser")) {
             stroke_color = 0xffff00;
         }
         let offset = (config.offset) ? config.offset : 0;
