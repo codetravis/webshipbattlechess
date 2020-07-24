@@ -11,8 +11,8 @@ class AttackLine extends Phaser.GameObjects.Line {
         } else if (config.attack_type === "turbolaser") {
             stroke_color = 0xffff00;
         }
-
-        super(config.scene, 0, 0, config.attacker.x, config.attacker.y, config.target.x, config.target.y, stroke_color); 
+        let offset = (config.offset) ? config.offset : 0;
+        super(config.scene, 0, 0, config.attacker.x + offset, config.attacker.y + offset, config.target.x, config.target.y, stroke_color); 
         this.setOrigin(0, 0);
         config.scene.add.existing(this);
         this.lifespan = config.lifespan;

@@ -21,6 +21,7 @@ class SceneMain extends Phaser.Scene {
         this.active_team = 1;
         this.map_width = 608;
         this.map_height = 608;
+        this.drawMapBoundry();
         this.tile_size = 32;
         this.allShips = [];
         this.active_ship = null;
@@ -86,6 +87,17 @@ class SceneMain extends Phaser.Scene {
         });
     }
 
+    drawMapBoundry() {
+        let top_line = this.add.line(0, 0, 1, 1, this.map_width, 1, 0xffffff);
+        top_line.setOrigin(0, 0);
+        let left_line = this.add.line(0, 0, 1, 1, 1, this.map_height, 0xffffff);
+        left_line.setOrigin(0, 0);
+        let right_line = this.add.line(0, 0, this.map_width, 1, this.map_width, this.map_height, 0xffffff);
+        right_line.setOrigin(0, 0);
+        let bottom_line = this.add.line(0, 0, 1, this.map_height, this.map_width, this.map_height, 0xffffff);
+        bottom_line.setOrigin(0, 0);
+    }
+
     loadInitialGameState() {
         let gameStateString = localStorage.getItem('game');
         if(gameStateString) {
@@ -108,46 +120,6 @@ class SceneMain extends Phaser.Scene {
                     this.allShips.push(next_ship);
                 });
             }
-        } else {
-            // load a test state
-            this.test_ship = new Ship({ 
-                scene: this, 
-                x: 32 * 10, 
-                y: 32 * 10,
-                hull_name: "light_freighter", 
-                team: 0, 
-                facing: 0, 
-                ship_id: 1
-            });
-            this.test_ship.addTurret(0, "single_turbolaser_turret");
-            this.allShips.push(this.test_ship);
-    
-            this.test_ship_two = new Ship({ 
-                scene: this, 
-                x: this.tile_size * 5, 
-                y: this.tile_size * 5,
-                hull_name: "light_freighter",
-                team: 0, 
-                facing: 0, 
-                ship_id: 2
-            });
-            this.test_ship_two.addTurret(0, "single_blaster_turret");
-    
-            this.allShips.push(this.test_ship_two);
-    
-            this.test_ship_three = new Ship({ 
-                scene: this, 
-                x: this.tile_size * 2, 
-                y: this.tile_size * 2,
-                hull_name: "light_scout", 
-                team: 1, 
-                facing: 4, 
-                ship_id: 3
-            });
-            this.test_ship_three.addTurret(0, "single_laser_turret");
-            this.test_ship_three.addTurret(1, "single_turbolaser_turret");
-    
-            this.allShips.push(this.test_ship_three);
         }
     }
 
@@ -280,42 +252,42 @@ class SceneMain extends Phaser.Scene {
             actual_fields_of_fire.push((field + attacker.facing) % 8);
         });
 
-        if(this.sideOfSlope(target, attacker, 1) <= 0 && this.sideOfSlope(target, attacker, -1) <= 0) {
+        if(this.sideOfSlope(target, attacker, 1) < 0 && this.sideOfSlope(target, attacker, -1) < 0) {
             if(actual_fields_of_fire.includes(0)) {
                 return true;
             }
         }
-        if(this.sideOfSlope(target, attacker, 1) <= 0 && this.sideOfSlope(target, attacker, -1) >= 0) {
+        if(this.sideOfSlope(target, attacker, 1) < 0 && this.sideOfSlope(target, attacker, -1) > 0) {
             if(actual_fields_of_fire.includes(2)) {
                 return true;
             }
         }
-        if(this.sideOfSlope(target, attacker, 1) >= 0 && this.sideOfSlope(target, attacker, -1) >= 0) {
+        if(this.sideOfSlope(target, attacker, 1) > 0 && this.sideOfSlope(target, attacker, -1) > 0) {
             if(actual_fields_of_fire.includes(4)) {
                 return true;
             }
         }
-        if(this.sideOfSlope(target, attacker, 1) >= 0 && this.sideOfSlope(target, attacker, -1) <= 0) {
+        if(this.sideOfSlope(target, attacker, 1) > 0 && this.sideOfSlope(target, attacker, -1) < 0) {
             if(actual_fields_of_fire.includes(6)) {
                 return true;
             }
         }
-        if(target.x >= attacker.x && target.y <= attacker.y) {
+        if(target.x > attacker.x && target.y < attacker.y) {
             if(actual_fields_of_fire.includes(1)) {
                 return true;
             }
         }
-        if(target.x >= attacker.x && target.y >= attacker.y) {
+        if(target.x > attacker.x && target.y > attacker.y) {
             if(actual_fields_of_fire.includes(3)) {
                 return true;
             }
         }
-        if(target.x <= attacker.x && target.y >= attacker.y) {
+        if(target.x < attacker.x && target.y > attacker.y) {
             if(actual_fields_of_fire.includes(5)) {
                 return true;
             }
         }
-        if(target.x <= attacker.x && target.y <= attacker.y) {
+        if(target.x < attacker.x && target.y < attacker.y) {
             if(actual_fields_of_fire.includes(7)) {
                 return true;
             }
@@ -375,31 +347,35 @@ class SceneMain extends Phaser.Scene {
     }
 
     considerFacing(target, ship) {
-        if(ship.facing === 0 && target.y > ship.y) {
-            return false;
+        if(ship.facing === 0 && this.sideOfSlope(target, ship, 1) < 0 &&
+            this.sideOfSlope(target, ship, -1) < 0) {
+            return true;
         }
-        if(ship.facing === 1 && this.sideOfSlope(target, ship, 1) >= 0) {
-            return false;
+        if(ship.facing === 1 && target.x > ship.x && target.y < ship.y) {
+            return true;
         }
-        if(ship.facing === 2 && target.x < ship.x) {
-            return false;
+        if(ship.facing === 2 && this.sideOfSlope(target, ship, 1) < 0 &&
+            this.sideOfSlope(target, ship, -1) > 0) {
+            return true;
         }
-        if(ship.facing === 3 && this.sideOfSlope(target, ship, -1) <= 0) {
-            return false;
+        if(ship.facing === 3 && target.x > ship.x && target.y > ship.y) {
+            return true;
         }
-        if(ship.facing === 4 && target.y < ship.y) {
-            return false;
+        if(ship.facing === 4 && this.sideOfSlope(target, ship, 1) > 0 &&
+        this.sideOfSlope(target, ship, -1) > 0) {
+            return true;
         }
-        if(ship.facing === 5 && this.sideOfSlope(target, ship, 1) <= 0) {
-            return false;
+        if(ship.facing === 5 && target.x < ship.x && target.y > ship.y) {
+            return true;
         }
-        if(ship.facing === 6 && target.x > ship.x) {
-            return false;
+        if(ship.facing === 6 && this.sideOfSlope(target, ship, 1) > 0 &&
+        this.sideOfSlope(target, ship, -1) < 0) {
+            return true;
         }
-        if(ship.facing === 7 && this.sideOfSlope(target, ship, -1) >= 0) {
-            return false;
+        if(ship.facing === 7 && target.x < ship.x && target.y < ship.y) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     sideOfSlope(target, ship, direction) {
@@ -459,7 +435,8 @@ class SceneMain extends Phaser.Scene {
     performAttack(attacker, target, attack_face, turrets) {
         let number_of_shots = 1;
         turrets.forEach((turret) => {
-            let new_attack_line = new AttackLine({scene: this, attacker: attacker, target: target, attack_type: "laser", lifespan: 200});
+            let new_attack_line = new AttackLine({scene: this, attacker: attacker, target: target, attack_type: turret.values.damage_type, lifespan: 200, offset: number_of_shots});
+            number_of_shots += 1;
             this.attackLines.push(new_attack_line);
             console.log("Attacking face " + attack_face + " of " + target.ship_id);
             for(var i = 0; i < turret.values.attacks_per_round; i++) {
