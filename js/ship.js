@@ -87,8 +87,10 @@ class Ship extends Phaser.GameObjects.Sprite {
     }
 
     payCoreStress(amount) {
+        // TODO modify amount based on hull upgrades and Engineer abilities
         this.core_stress += amount;
         if(this.core_stress > this.hull.core_stress_threshold) {
+            console.log("Over stressed core caused internal damage");
             this.hull.core_health -= 1;
         }
     }

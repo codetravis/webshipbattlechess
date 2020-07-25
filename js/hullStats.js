@@ -107,25 +107,25 @@ class HullStats {
                     {
                         id: 1,
                         name: "Left Front Turret",
-                        fields_of_fire: [0, 6, 7],
+                        fields_of_fire: [0, 7],
                         turret: null,
                     },
                     {
                         id: 2,
                         name: "Right Front Turret",
-                        fields_of_fire: [0, 1, 2],
+                        fields_of_fire: [0, 1],
                         turret: null,
                     },
                     {
                         id: 3,
                         name: "Left Mid Turret",
-                        fields_of_fire: [0, 6, 7],
+                        fields_of_fire: [0, 7],
                         turret: null,
                     },
                     {
                         id: 4,
                         name: "Right Mid Turret",
-                        fields_of_fire: [0, 1, 2],
+                        fields_of_fire: [0, 1],
                         turret: null,
                     },
                 ]
