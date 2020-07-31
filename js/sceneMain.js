@@ -13,6 +13,8 @@ class SceneMain extends Phaser.Scene {
         this.load.image("single_laser_turret", "images/single_laser.png");
         this.load.image("single_blaster_turret", "images/single_laser.png");
         this.load.image("single_turbolaser_turret", "images/single_laser.png");
+        this.load.image("single_concussionmissile_turret", "images/missile_turret.svg");
+        this.load.image("single_105mm_turret", "images/cannon_turret.svg");
         this.load.image("move_action_button", "images/move_action_button.svg");
         this.load.image("turn_action_button", "images/turn_action_button.svg");
         this.load.image("attack_action_button", "images/attack_action_button.svg");
@@ -22,6 +24,7 @@ class SceneMain extends Phaser.Scene {
         this.active_team = 1;
         this.map_width = 608;
         this.map_height = 608;
+
         this.drawMapBoundry();
         this.tile_size = 32;
         this.allShips = [];
@@ -188,6 +191,8 @@ class SceneMain extends Phaser.Scene {
                 for( var j = 0; j <= ship.speed; j++) {
                     if (i == 0 && j == 0) {
                         continue;
+                    } else if (i + j > ship.speed) {
+                        continue;
                     }
 
                     let plus_y = ship.y + (j * this.tile_size);
@@ -216,7 +221,6 @@ class SceneMain extends Phaser.Scene {
         })
         this.attackSquares = [];
 
-        let square_size = this.tile_size;
         ship.hull.hard_points.forEach((hard_point) => {
             if(hard_point.turret) {
                 for(var i = 0; i <= hard_point.turret.values.range; i++) {
@@ -224,7 +228,10 @@ class SceneMain extends Phaser.Scene {
                     let minus_x = ship.x - (i * this.tile_size);
                     
                     for(var j = 0; j <= hard_point.turret.values.range; j++) {
+                        // Can't shoot ourselves
                         if (i == 0 && j == 0) {
+                            continue;
+                        } else if (i + j > hard_point.turret.values.range) {
                             continue;
                         }
                         let plus_y = ship.y + (j * this.tile_size);

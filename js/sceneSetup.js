@@ -13,6 +13,8 @@ class SceneSetup extends Phaser.Scene {
         this.load.image("single_laser_turret", "images/single_laser.png");
         this.load.image("single_blaster_turret", "images/single_laser.png");
         this.load.image("single_turbolaser_turret", "images/single_laser.png");
+        this.load.image("single_concussionmissle_turret", "images/missile_turret.svg");
+        this.load.image("single_105mm_turret", "images/cannon_turret.svg");
         this.load.image("buy_button", "images/buy_button.svg");
         this.load.image("done_button", "images/done_button.svg");
     }
@@ -130,7 +132,7 @@ class SceneSetup extends Phaser.Scene {
             let new_ship = new Ship({ 
                 scene: this, 
                 x: next_ship_id * 32, 
-                y: this.tile_size + (this.team - 1) * (this.map_height - this.tile_size),
+                y: this.tile_size + (this.team - 1) * (this.map_height - (this.tile_size * 2)),
                 hull_name: this.selectedCard.item_name,
                 team: this.team, 
                 facing: (this.team * 4) % 8, 

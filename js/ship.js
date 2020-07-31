@@ -73,11 +73,42 @@ class Ship extends Phaser.GameObjects.Sprite {
     }
 
     receiveDamage(amount, type, face) {
-        if(this.hull[face + "_shield"] > 0) { 
+        // Kinetic rounds lose damage when hitting shields to a min of 1
+        // Energy rounds lose damage once they hit armor to a min of 1
+        // Explosive rounds damage does not bleed through shields to the armor and core
+        if(this.hull[face + "_shield"] > 0) {
+            let starting_shield = this.hull[face + "_shield"];
+
+            if(type === "kinetic") {
+                amount = Math.floor(amount * .90);
+            }
+
             this.hull[face + "_shield"] = Math.max(0, this.hull[face + "_shield"] - amount);
-        } else if(this.hull[face + "_armor"] > 0) {
+
+            if(this.hull[face + "_shield"] === 0) {
+                amount = Math.max(0, amount - starting_shield);
+            }
+
+            if(type === "explosive") {
+                amount = 0;
+            }
+        }
+        
+        if(this.hull[face + "_armor"] > 0) {
+            let starting_armor = this.hull[face + "_armor"];
+
+            if(type === "energy") {
+                amount = Math.floor(amount * .90);
+            }
+
             this.hull[face + "_armor"] = Math.max(0, this.hull[face + "_armor"] - amount);
-        } else {
+
+            if(this.hull[face + "_armor"] === 0) {
+                amount = Math.max(0, amount - starting_armor);
+            }
+        } 
+        
+        if(amount > 0) {
             this.hull.core_health = Math.max(0, this.hull.core_health - amount);
         }
 
@@ -99,7 +130,7 @@ class Ship extends Phaser.GameObjects.Sprite {
         if(this.shield_generation < this.hull.shield_generator) {
             let hullStats = new HullStats();
             let baseStats = hullStats.getBaseHullStats(this.hull_name);
-            this.hull[face + "_shield"] = Math.min(baseStats[face + "_shield"], this.hull[face + "_shield"] + 1);
+            this.hull[face + "_shield"] = Math.min(baseStats[face + "_shield"], this.hull[face + "_shield"] + 10);
             this.payCoreStress(5);
             this.shield_generation += 1;
         }
