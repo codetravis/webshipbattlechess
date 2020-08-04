@@ -69,13 +69,14 @@ class Ship extends Phaser.GameObjects.Sprite {
     }
 
     addTurret(turret_id, turret_key) {
-        this.hull.hard_points[turret_id].turret = new Turret({scene: this.scene, x: 100, y: 800, key: turret_key})
+        this.hull.hard_points[turret_id].turret = new Turret({scene: this.scene, x: 50 + 32 * turret_id, y: 700, key: turret_key})
     }
 
     receiveDamage(amount, type, face) {
         // Kinetic rounds lose damage when hitting shields to a min of 1
-        // Energy rounds lose damage once they hit armor to a min of 1
+        // Energy beams lose damage once they hit armor to a min of 1
         // Explosive rounds damage does not bleed through shields to the armor and core
+        // Ion beams do increased damage to shields, lower damage to armor, and primarily core stress to the core 
         if(this.hull[face + "_shield"] > 0) {
             let starting_shield = this.hull[face + "_shield"];
 
@@ -83,10 +84,17 @@ class Ship extends Phaser.GameObjects.Sprite {
                 amount = Math.floor(amount * .90);
             }
 
+            // ion beams do increased damage to shields
+            if(type === "ion") {
+                amount = Math.floor(amount * 1.10);
+            }
+
             this.hull[face + "_shield"] = Math.max(0, this.hull[face + "_shield"] - amount);
 
             if(this.hull[face + "_shield"] === 0) {
                 amount = Math.max(0, amount - starting_shield);
+            } else {
+                amount = 0;
             }
 
             if(type === "explosive") {
@@ -94,26 +102,41 @@ class Ship extends Phaser.GameObjects.Sprite {
             }
         }
         
-        if(this.hull[face + "_armor"] > 0) {
+        if(this.hull[face + "_armor"] > 0 && amount > 0) {
             let starting_armor = this.hull[face + "_armor"];
 
+            // energy weapons do reduced damage to armor
             if(type === "energy") {
-                amount = Math.floor(amount * .90);
+                amount = Math.max(1, Math.floor(amount * .90));
+            }
+
+            // ion beams do reduced damage to armor
+            if(type === "ion") {
+                amount = Math.max(1, Math.floor(amount * .50));
             }
 
             this.hull[face + "_armor"] = Math.max(0, this.hull[face + "_armor"] - amount);
 
             if(this.hull[face + "_armor"] === 0) {
                 amount = Math.max(0, amount - starting_armor);
+            } else {
+                amount = 0;
+            }
+
+            // only half of explosive damage bleeds through armor
+            if(type === "explosive" && amount > 0) {
+                Math.max(1, Math.floor(amount * .50))
             }
         } 
         
         if(amount > 0) {
+            // when ion beams hit the hull they deal half their damage as stress, and 10% as actual damage
+            if (type == "ion") {
+                let stress_amount = Math.max(1, Math.floor(amount * .50));
+                this.payCoreStress(stress_amount);
+                amount = Math.max(1, Math.floor(amount * .10));
+            }
             this.hull.core_health = Math.max(0, this.hull.core_health - amount);
-        }
-
-        if (type == "ion") {
-            this.payCoreStress(10);
         }
     }
 

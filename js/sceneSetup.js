@@ -17,6 +17,8 @@ class SceneSetup extends Phaser.Scene {
         this.load.image("single_105mm_turret", "images/cannon_turret.svg");
         this.load.image("buy_button", "images/buy_button.svg");
         this.load.image("done_button", "images/done_button.svg");
+        this.load.image("next_arrow", "images/next_arrow.svg");
+        this.load.image("previous_arrow", "images/previous_arrow.svg");
     }
 
     create() {
@@ -26,6 +28,9 @@ class SceneSetup extends Phaser.Scene {
         this.selectedCard = null;
         this.active_ship = null;
         this.cardsInStore = [];
+        this.storePage = 1;
+        this.storePageSize = 3;
+        this.storeState = "BUYING_HULL";
         this.loadShipCards();
         
         this.team = 1;
@@ -63,12 +68,34 @@ class SceneSetup extends Phaser.Scene {
             display_height: 48
         });
 
+        this.nextButton = new UIButton({
+            scene: this,
+            x: 520,
+            y: 100,
+            action_name: "STORE_NEXT",
+            key: "next_arrow",
+            display_width: 48,
+            display_height: 64
+        });
+
+        this.previousButton = new UIButton({
+            scene: this,
+            x: 48,
+            y: 70,
+            action_name: "STORE_PREVIOUS",
+            key: "previous_arrow",
+            display_width: 48,
+            display_height: 64
+        });
+
         this.emitter = EventDispatcher.getInstance();
         this.emitter.on("START_GAME", this.startGame.bind(this));
         this.emitter.on("SET_SELECTED_HULL", this.setCardSelection.bind(this));
         this.emitter.on("SET_SELECTED_TURRET", this.setCardSelection.bind(this));
         this.emitter.on("BUY_SELECTED_CARD", this.buySelectedCard.bind(this));
         this.emitter.on("DONE_WITH_SHIP", this.loadShipCards.bind(this));
+        this.emitter.on("STORE_NEXT", this.nextStorePage.bind(this));
+        this.emitter.on("STORE_PREVIOUS", this.previousStorePage.bind(this));
     }
 
     startGame() {
@@ -89,30 +116,78 @@ class SceneSetup extends Phaser.Scene {
         this.cardsInStore = [];
     }
 
-    loadShipCards() {
+    nextStorePage() {
         this.clearStore();
+        this.storePage += 1;
+        console.log("On Store Page: " + this.storePage);
+        if (this.storeState === "BUYING_HULL") {
+            this.loadShipCards();
+        } else {
+            this.loadTurretCards();
+        }
+    }
+
+    previousStorePage() {
+        this.clearStore();
+        this.storePage = Math.max(1, this.storePage - 1);
+        console.log("On Store Page: " + this.storePage);
+        if (this.storeState === "BUYING_HULL") {
+            this.loadShipCards();
+        } else {
+            this.loadTurretCards();
+        }
+    }
+
+    loadShipCards() {
+        if(this.storeState === "BUYING_TURRET") {
+            this.storePage = 1;
+        }
+        this.clearStore();
+        this.storeState = "BUYING_HULL";
         let hullStats = new HullStats();
         console.log(hullStats.hulls);
         let card_count = 1;
-        let card_width = 96;
+        let display_order = 1;
+        let card_width = 120;
         Object.keys(hullStats.hulls).forEach((key) => {
+
+            if(card_count > this.storePage * this.storePageSize || 
+               card_count < this.storePage * this.storePageSize - this.storePageSize) {
+                console.log("Card " + card_count + " is not on page " + this.storePage);
+                card_count++;
+                return;
+            }
             let hull = hullStats.getBaseHullStats(key);
-            let test_card = new StoreCard({scene: this, x: card_width * card_count, y: card_width, key: hull.name, action_name: "SET_SELECTED_HULL", item_type: "hull"});
-            this.cardsInStore.push(test_card);
+            let hull_card = new StoreCard({scene: this, x: card_width * display_order, y: card_width, key: hull.name, action_name: "SET_SELECTED_HULL", item_type: "hull"});
+            this.cardsInStore.push(hull_card);
+            display_order++;
             card_count++;
         });
         
     }
 
     loadTurretCards() {
+        if(this.storeState === "BUYING_HULL") {
+            this.storePage = 1;
+        }
         this.clearStore();
+        this.storeState = "BUYING_TURRET";
         let turretStats = new TurretStats();
         let card_count = 1;
-        let card_width = 96;
+        let display_order = 1;
+        let card_width = 120;
         Object.keys(turretStats.turrets).forEach((key) => {
+
+            if(card_count > this.storePage * this.storePageSize || 
+                card_count <= this.storePage * this.storePageSize - this.storePageSize) {
+                console.log("Card " + card_count + " is not on page " + this.storePage);
+                 card_count++;
+                 return;
+             }
             let turret = turretStats.getBaseTurretStats(key);
-            let test_card = new StoreCard({scene: this, x: card_width * card_count, y: card_width, key: turret.name, action_name: "SET_SELECTED_TURRET", item_type: "turret"});
-            this.cardsInStore.push(test_card);
+            let turret_card = new StoreCard({scene: this, x: card_width * display_order, y: card_width, key: turret.name, action_name: "SET_SELECTED_TURRET", item_type: "turret"});
+            this.cardsInStore.push(turret_card);
+            display_order++;
             card_count++;
         });
     }
@@ -147,6 +222,7 @@ class SceneSetup extends Phaser.Scene {
                 // transition to outfitting ship with weapons
                 this.active_ship = this.gameState["team_" + this.team + "_fleet"][new_ship.ship_id];
                 this.gameState.last_ship_id = next_ship_id;
+                this.storePage = 1;
                 this.loadTurretCards();
             } else {
                 new_ship.destroy();
