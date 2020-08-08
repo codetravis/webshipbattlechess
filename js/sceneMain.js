@@ -22,6 +22,10 @@ class SceneMain extends Phaser.Scene {
 
     create() {
         this.active_team = 1;
+        this.current_turn = 1;
+        this.max_turns = 30;
+        this.current_iniative = 1;
+        this.action_taken = 0;
         this.map_width = 608;
         this.map_height = 608;
 
@@ -138,7 +142,7 @@ class SceneMain extends Phaser.Scene {
     }
 
     setActiveShip(ship) {
-        if(this.active_team == ship.team) {
+        if(this.active_team == ship.team && this.action_taken === 0 && ship.hull.base_initiative === this.current_iniative) {
             console.log(ship.ship_id + " " + ship.x + " " + ship.y);
             console.log(ship.hull.core_health);
 
@@ -431,7 +435,7 @@ class SceneMain extends Phaser.Scene {
             square.destroy();
         });
         this.movementSquares = [];
-
+        this.action_taken = 1;
     }
 
     faceActiveShip(targetSquare) {
@@ -441,6 +445,7 @@ class SceneMain extends Phaser.Scene {
             square.destroy();
         });
         this.facingSquares = [];
+        this.action_taken = 1;
     }
 
     attackTargetShip(targetSquare) {
@@ -468,6 +473,7 @@ class SceneMain extends Phaser.Scene {
         })
         this.attackSquares = [];
         this.active_ship.has_attacked = 1;
+        this.action_taken = 1;
     }
 
     performAttack(attacker, target, attack_face, turrets) {
@@ -556,9 +562,8 @@ class SceneMain extends Phaser.Scene {
 
     resetShipActions(team) {
         this.allShips.forEach((ship) => {
-            if(ship.team === team) {
+            if(ship.team === team && this.current_iniative === ship.base_initiative) {
                 ship.prepareForAction();
-                ship.showMe();
                 this.showEnemies(ship.x, ship.y, ship.scan_range, team);
             } else {
                 ship.hideMe();
@@ -567,8 +572,15 @@ class SceneMain extends Phaser.Scene {
 
         this.allShips.forEach((ship) => {
             if(ship.team === team) {
+                ship.showMe();
                 this.showEnemies(ship.x, ship.y, ship.scan_range, team);
             }
+        });
+    }
+
+    resetAllShipActions() {
+        this.allShips.forEach((ship) => {
+            ship.prepareForAction();
         });
     }
 
@@ -580,17 +592,64 @@ class SceneMain extends Phaser.Scene {
         });
     }
 
+    getReadyShipsForCurrentInitiative() {
+        let ships_to_act = [];
+        let team_one_ships = 0;
+        let team_two_ships = 0;
+        this.allShips.forEach((ship) => {
+            if(ship.turn_finished === 0 && 
+               ship.hull.base_initiative === this.current_iniative) {
+                ships_to_act.push(ship);
+                if(ship.team === 1) {
+                    team_one_ships += 1;
+                } else if (ship.team === 2) {
+                    team_two_ships += 1;
+                }
+            }
+        });
+
+        return { ready_ships: ships_to_act, team_1_ships: team_one_ships, team_2_ships: team_two_ships};
+    }
+
     endTurn() {
-        if(this.active_team == 1) {
+        if(this.active_ship) {
+            this.active_ship.turn_finished = 1;
+            this.active_ship = null;
+        }
+        let ships_to_act = this.getReadyShipsForCurrentInitiative();
+        
+        if(this.active_team == 1 && ships_to_act.team_2_ships > 0) {
             this.active_team = 2;
         } else {
             this.active_team = 1;
         }
+
+        // loop through initiatives until we hit one with ships that 
+        let loop_count = 0;
+        let starting_initiative = this.current_iniative;
+        console.log(ships_to_act.ready_ships);
+        while(loop_count === 0 && ships_to_act.ready_ships.length === 0) {
+            console.log("looking for ships to act in initiative " + this.current_iniative);
+            if (ships_to_act.ready_ships.length === 0) {
+                if(this.current_iniative >= 7) {
+                    this.current_iniative = 1;
+                    this.resetAllShipActions();
+                } else {
+                    this.current_iniative += 1;
+                    if(this.current_iniative === starting_initiative) {
+                        loop_count = 1;
+                    }
+                }
+                ships_to_act = this.getReadyShipsForCurrentInitiative();
+            }
+        }
+        this.resetShipActions(this.active_team);
+
         this.attackLines.forEach((line) => {
             line.destroy();
         });
         this.attackLines = [];
         this.clearActionSquares();
-        this.resetShipActions(this.active_team);
+        this.action_taken = 0;
     }
 }

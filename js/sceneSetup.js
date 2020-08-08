@@ -90,6 +90,7 @@ class SceneSetup extends Phaser.Scene {
 
         this.creditsRemaining = this.add.text(50, 250, "Credits Remaining: " + this.gameState["team_" + this.team + "_credits"], {fontFamily: 'Arial'});
         this.displayCardName = this.add.text(50, 300, "Nothing Selected", {fontFamily: 'Arial'});
+        this.displayCardCost = this.add.text(50, 320, "Cost: ", {fontFamily: 'Arial'});
 
         this.emitter = EventDispatcher.getInstance();
         this.emitter.on("START_GAME", this.startGame.bind(this));
@@ -218,9 +219,18 @@ class SceneSetup extends Phaser.Scene {
 
     displaySelectedHullStats() {
         if(this.selectedCard) {
-            let hullStats = new HullStats();
-            let hull = hullStats.getBaseHullStats(this.selectedCard.item_name);
-            this.displayCardName.text = hull.display_name;
+            if( this.storeState === "BUYING_HULL" ) {
+                let hullStats = new HullStats();
+                let hull = hullStats.getBaseHullStats(this.selectedCard.item_name);
+                this.displayCardName.text = hull.display_name;
+                this.displayCardCost.text = "Cost: " + hull.base_value + " Cr";
+            } else if (this.storeState === "BUYING_TURRET") {
+                let turretStats = new TurretStats();
+                let turret = turretStats.getBaseTurretStats(this.selectedCard.item_name);
+                console.log(turret);
+                this.displayCardName.text = turret.display_name;
+                this.displayCardCost.text = "Cost: " + turret.base_value + " Cr";
+            }
         }
     }
 
@@ -272,6 +282,8 @@ class SceneSetup extends Phaser.Scene {
                 });
             }
         }
+
+        this.creditsRemaining.text = "Credits Remaining: " + this.gameState["team_" + this.team + "_credits"];
     }
 
     loadGameState() {
@@ -282,8 +294,8 @@ class SceneSetup extends Phaser.Scene {
             this.gameState = {
                 last_ship_id: 0,
                 teams: 2,
-                team_1_credits: 3000,
-                team_2_credits: 3000,
+                team_1_credits: 100000,
+                team_2_credits: 100000,
                 team_1_fleet: {},
                 team_2_fleet: {}
             };
