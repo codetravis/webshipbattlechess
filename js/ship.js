@@ -5,6 +5,23 @@ class Ship extends Phaser.GameObjects.Sprite {
         super(config.scene, config.x, config.y, config.hull_name);
         this.displayWidth = 32;
         this.scaleY = this.scaleX;
+        this.team = config.team;
+        this.team_color = 0xffffff;
+        if(this.team === 1) {
+            this.team_color =  0x00ff00;
+        } else if (this.team === 2) {
+            this.team_color = 0xffff00;
+        }
+        this.team_marker = new Phaser.GameObjects.Rectangle(
+            config.scene, 
+            config.x, 
+            config.y, 
+            this.displayWidth,
+            this.displayWidth,
+            this.team_color,
+            0.5
+            );
+        config.scene.add.existing(this.team_marker);
         config.scene.add.existing(this);
 
         let hullStats = new HullStats();
@@ -15,15 +32,16 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.speed = this.hull.speed;
         this.facing = config.facing;
         this.angle = 45 * this.facing;
-        this.team = config.team;
         this.has_moved = 0;
         this.has_faced = 0;
         this.has_attacked = 0;
         this.turn_finished = 0;
         this.core_stress = 0;
-        //this.initiative = 0;
+        this.initiative = this.hull.base_initiative;
         this.shield_generation = 0;
         this.data_object = 0;
+
+        
 
         this.setInteractive();
         this.on('pointerdown', this.clicked, this);
@@ -38,7 +56,8 @@ class Ship extends Phaser.GameObjects.Sprite {
         // add animation
         this.x = x;
         this.y = y;
-    
+        this.team_marker.x = x;
+        this.team_marker.y = y;
         this.has_moved = 1;
     }
 
@@ -63,10 +82,12 @@ class Ship extends Phaser.GameObjects.Sprite {
     }
 
     hideMe() {
+        this.team_marker.visible = false;
         this.visible = false;
     }
 
     showMe() {
+        this.team_marker.visible = true;
         this.visible = true;
     }
 
@@ -139,6 +160,10 @@ class Ship extends Phaser.GameObjects.Sprite {
                 amount = Math.max(1, Math.floor(amount * .10));
             }
             this.hull.core_health = Math.max(0, this.hull.core_health - amount);
+        }
+
+        if (this.hull.core_health === 0) {
+            this.team_marker.destroy();
         }
     }
 

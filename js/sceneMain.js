@@ -142,7 +142,7 @@ class SceneMain extends Phaser.Scene {
     }
 
     setActiveShip(ship) {
-        if(this.active_team == ship.team && this.action_taken === 0 && ship.hull.base_initiative === this.current_iniative) {
+        if(this.active_team == ship.team && this.action_taken === 0 && ship.initiative === this.current_iniative) {
             console.log(ship.ship_id + " " + ship.x + " " + ship.y);
             console.log(ship.hull.core_health);
 
@@ -562,8 +562,8 @@ class SceneMain extends Phaser.Scene {
 
     resetShipActions(team) {
         this.allShips.forEach((ship) => {
-            if(ship.team === team && this.current_iniative === ship.base_initiative) {
-                ship.prepareForAction();
+            if(ship.team === team && ship.initiative === this.current_iniative) {
+                //ship.prepareForAction();
                 this.showEnemies(ship.x, ship.y, ship.scan_range, team);
             } else {
                 ship.hideMe();
@@ -598,7 +598,8 @@ class SceneMain extends Phaser.Scene {
         let team_two_ships = 0;
         this.allShips.forEach((ship) => {
             if(ship.turn_finished === 0 && 
-               ship.hull.base_initiative === this.current_iniative) {
+               ship.hull.core_health > 0 &&
+               ship.initiative === this.current_iniative) {
                 ships_to_act.push(ship);
                 if(ship.team === 1) {
                     team_one_ships += 1;
@@ -631,16 +632,23 @@ class SceneMain extends Phaser.Scene {
         while(loop_count === 0 && ships_to_act.ready_ships.length === 0) {
             console.log("looking for ships to act in initiative " + this.current_iniative);
             if (ships_to_act.ready_ships.length === 0) {
+                console.log("no ships ready, advancing initiative");
                 if(this.current_iniative >= 7) {
                     this.current_iniative = 1;
                     this.resetAllShipActions();
                 } else {
                     this.current_iniative += 1;
                     if(this.current_iniative === starting_initiative) {
+                        console.log("No ships left to act");
                         loop_count = 1;
                     }
                 }
                 ships_to_act = this.getReadyShipsForCurrentInitiative();
+                if(this.active_team == 1 && ships_to_act.team_2_ships > 0) {
+                    this.active_team = 2;
+                } else {
+                    this.active_team = 1;
+                }
             }
         }
         this.resetShipActions(this.active_team);
