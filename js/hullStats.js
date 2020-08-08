@@ -12,6 +12,7 @@ class HullStats {
         return {
             "light_freighter": {
                 name: "light_freighter",
+                display_name: "Terran Light Freighter",
                 description: "The light freighter is primarily used by merchants for hauling goods but can be repurposed",
                 base_value: 500,
                 speed: 2,
@@ -43,6 +44,7 @@ class HullStats {
             }, 
             "light_scout": {
                 name: "light_scout",
+                display_name: "Terran Scout Frigate",
                 description: "Fast but lightly armed and armored, the light scout is used for patrol and reconasaince",
                 base_value: 750,
                 speed: 3,
@@ -80,6 +82,7 @@ class HullStats {
             },
             "wedge_destroyer": {
                 name: "wedge_destroyer",
+                display_name: "Terran Destroyer",
                 description: "The Wedge packs immense firepower for its size. All turrets overlap fields of fire in the forward arc",
                 base_value: 1000,
                 speed: 2,

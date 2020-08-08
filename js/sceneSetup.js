@@ -81,12 +81,15 @@ class SceneSetup extends Phaser.Scene {
         this.previousButton = new UIButton({
             scene: this,
             x: 48,
-            y: 70,
+            y: 100,
             action_name: "STORE_PREVIOUS",
             key: "previous_arrow",
             display_width: 48,
             display_height: 64
         });
+
+        this.creditsRemaining = this.add.text(50, 250, "Credits Remaining: " + this.gameState["team_" + this.team + "_credits"], {fontFamily: 'Arial'});
+        this.displayCardName = this.add.text(50, 300, "Nothing Selected", {fontFamily: 'Arial'});
 
         this.emitter = EventDispatcher.getInstance();
         this.emitter.on("START_GAME", this.startGame.bind(this));
@@ -149,10 +152,16 @@ class SceneSetup extends Phaser.Scene {
         let card_count = 1;
         let display_order = 1;
         let card_width = 120;
-        Object.keys(hullStats.hulls).forEach((key) => {
+
+        let hull_keys = Object.keys(hullStats.hulls);
+        if(this.storePage * this.storePageSize - this.storePageSize >= hull_keys.length) {
+            this.storePage = 1;
+        }
+
+        hull_keys.forEach((key) => {
 
             if(card_count > this.storePage * this.storePageSize || 
-               card_count < this.storePage * this.storePageSize - this.storePageSize) {
+               card_count <= this.storePage * this.storePageSize - this.storePageSize) {
                 console.log("Card " + card_count + " is not on page " + this.storePage);
                 card_count++;
                 return;
@@ -176,7 +185,13 @@ class SceneSetup extends Phaser.Scene {
         let card_count = 1;
         let display_order = 1;
         let card_width = 120;
-        Object.keys(turretStats.turrets).forEach((key) => {
+
+        let turret_keys = Object.keys(turretStats.turrets);
+        if(this.storePage * this.storePageSize - this.storePageSize >= turret_keys.length) {
+            this.storePage = 1;
+        }
+    
+        turret_keys.forEach((key) => {
 
             if(card_count > this.storePage * this.storePageSize || 
                 card_count <= this.storePage * this.storePageSize - this.storePageSize) {
@@ -196,9 +211,17 @@ class SceneSetup extends Phaser.Scene {
         if(this.selectedCard && this.selectedCard.item_name !== selected_card.item_name) {
             this.selectedCard.toggleSelection();
         }
+
         this.selectedCard = selected_card;
-        // get hull stats
-        // display in view area
+        this.displaySelectedHullStats();
+    }
+
+    displaySelectedHullStats() {
+        if(this.selectedCard) {
+            let hullStats = new HullStats();
+            let hull = hullStats.getBaseHullStats(this.selectedCard.item_name);
+            this.displayCardName.text = hull.display_name;
+        }
     }
 
     buySelectedCard() {
