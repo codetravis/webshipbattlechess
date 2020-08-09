@@ -40,7 +40,7 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.initiative = this.hull.base_initiative;
         this.shield_generation = 0;
         this.data_object = 0;
-
+        this.reserved = 0;
         
 
         this.setInteractive();
@@ -78,6 +78,7 @@ class Ship extends Phaser.GameObjects.Sprite {
             this.shield_generation = 0;
             this.turn_finished = 0;
             this.core_stress = Math.max(0, this.core_stress - this.hull.core_cooling);
+            this.reserved = 0;
         }
     }
 
