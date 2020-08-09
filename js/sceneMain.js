@@ -695,5 +695,28 @@ class SceneMain extends Phaser.Scene {
         this.attackLines = [];
         this.clearActionSquares();
         this.action_taken = 0;
+        this.checkForVictory();
+    }
+
+    checkForVictory() {
+        let ships_alive = [];
+        let team_one_ships = 0;
+        let team_two_ships = 0;
+        this.allShips.forEach((ship) => {
+            if(ship.hull.core_health > 0) {
+                ships_alive.push(ship);
+                if(ship.team === 1) {
+                    team_one_ships += 1;
+                } else if (ship.team === 2) {
+                    team_two_ships += 1;
+                }
+            }
+        });
+
+        if(team_one_ships > 0 && team_two_ships === 0) {
+            this.scene.start('SceneVictory');
+        } else if(team_two_ships > 0 && team_one_ships === 0) {
+            this.scene.start('SceneVictory');
+        }
     }
 }

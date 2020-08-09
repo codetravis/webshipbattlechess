@@ -106,6 +106,7 @@ class SceneSetup extends Phaser.Scene {
         if(this.team < this.max_teams) {
             console.log("Next team's setup begins");
             this.team++;
+            this.creditsRemaining.text = "Credits Remaining: " + this.gameState["team_" + this.team + "_credits"];
             this.loadShipCards();
         } else {
             this.saveGameState();
