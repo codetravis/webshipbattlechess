@@ -159,6 +159,12 @@ class SceneMain extends Phaser.Scene {
             this.clearActionSquares();
 
             this.active_ship = ship;
+            this.setShipInfoDisplay(ship);
+        }
+    }
+
+    setShipInfoDisplay(ship) {
+        if(ship) {
             this.activeShipName.text = "Ship: " + ship.ship_id + " " + ship.hull.display_name;
             this.activeShipHealth.text = "Core Health: " + ship.hull.core_health;
             this.activeShipArmor.text = "Armor: Front - " + ship.hull.front_armor + " Right - "  + 
@@ -166,7 +172,14 @@ class SceneMain extends Phaser.Scene {
             this.activeShipShields.text = "Shields: Front - " + ship.hull.front_shield + " Right - "  + 
                 ship.hull.right_shield + " Rear - " + ship.hull.rear_shield + " Left - " + ship.hull.left_shield;
             this.activeShipCoreStress.text = "Core Stress: " + ship.core_stress + "/" + ship.hull.max_core_stress;
+        } else {
+            this.activeShipName.text = "";
+            this.activeShipHealth.text = "";
+            this.activeShipArmor.text = "";
+            this.activeShipShields.text = "";
+            this.activeShipCoreStress.text = "";
         }
+
     }
 
     showMoveActions() {
@@ -491,6 +504,7 @@ class SceneMain extends Phaser.Scene {
         this.attackSquares = [];
         this.active_ship.has_attacked = 1;
         this.action_taken = 1;
+        this.setShipInfoDisplay(this.active_ship);
     }
 
     performAttack(attacker, target, attack_face, turrets) {
@@ -512,7 +526,7 @@ class SceneMain extends Phaser.Scene {
                     console.log("Attack with " + turret.values.name + " missed");
                 }
             }
-            attacker.payCoreStress(turret.power_cost);
+            attacker.payCoreStress(turret.values.power_cost);
         });
 
         if (target.hull.core_health <= 0) {
@@ -633,11 +647,7 @@ class SceneMain extends Phaser.Scene {
         if(this.active_ship) {
             this.active_ship.turn_finished = 1;
             this.active_ship = null;
-            this.activeShipName.text = "";
-            this.activeShipHealth.text = "";
-            this.activeShipArmor.text = "";
-            this.activeShipShields.text = "";
-            this.activeShipCoreStress.text = "";
+            this.setShipInfoDisplay(null);
         }
         let ships_to_act = this.getReadyShipsForCurrentInitiative();
         
