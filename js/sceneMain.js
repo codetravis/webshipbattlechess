@@ -38,7 +38,8 @@ class SceneMain extends Phaser.Scene {
         this.facingSquares = [];
         this.attackLines = [];
 
-        this.createUIButtons();      
+        this.createUIButtons();
+        this.createUIInfoDisplay();     
         
         this.emitter = EventDispatcher.getInstance();
         this.emitter.on("SHIP_CLICKED", this.setActiveShip.bind(this));
@@ -95,6 +96,14 @@ class SceneMain extends Phaser.Scene {
         });
     }
 
+    createUIInfoDisplay() {
+        this.activeShipName = this.add.text(20, 720, "", {fontFamily: 'Arial'});
+        this.activeShipHealth = this.add.text(20, 735, "", {fontFamily: 'Arial'});
+        this.activeShipArmor = this.add.text(20, 750, "", {fontFamily: 'Arial'});
+        this.activeShipShields = this.add.text(20, 765, "", {fontFamily: 'Arial'});
+        this.activeShipCoreStress = this.add.text(20, 780, "", {fontFamily: 'Arial'});
+    }
+
     drawMapBoundry() {
         let top_line = this.add.line(0, 0, 1, 1, this.map_width, 1, 0xffffff);
         top_line.setOrigin(0, 0);
@@ -143,12 +152,20 @@ class SceneMain extends Phaser.Scene {
 
     setActiveShip(ship) {
         if(this.active_team == ship.team && this.action_taken === 0 && ship.initiative === this.current_iniative) {
+            // set the hud to show the selected units info
             console.log(ship.ship_id + " " + ship.x + " " + ship.y);
             console.log(ship.hull.core_health);
 
             this.clearActionSquares();
 
             this.active_ship = ship;
+            this.activeShipName.text = "Ship: " + ship.ship_id + " " + ship.hull.display_name;
+            this.activeShipHealth.text = "Core Health: " + ship.hull.core_health;
+            this.activeShipArmor.text = "Armor: Front - " + ship.hull.front_armor + " Right - "  + 
+                ship.hull.right_armor + " Rear - " + ship.hull.rear_armor + " Left - " + ship.hull.left_armor;
+            this.activeShipShields.text = "Shields: Front - " + ship.hull.front_shield + " Right - "  + 
+                ship.hull.right_shield + " Rear - " + ship.hull.rear_shield + " Left - " + ship.hull.left_shield;
+            this.activeShipCoreStress.text = "Core Stress: " + ship.core_stress + "/" + ship.hull.max_core_stress;
         }
     }
 
@@ -186,7 +203,7 @@ class SceneMain extends Phaser.Scene {
     }
 
     drawMovement(ship) {
-        // TODO modify for only forward movement after adding turn action button
+        // TODO modify for only forward movement after adding turn action button?
         this.movementSquares = [];
         if(ship.has_moved === 0) {
             for( var i = 0; i <= ship.speed; i++) {
@@ -616,6 +633,11 @@ class SceneMain extends Phaser.Scene {
         if(this.active_ship) {
             this.active_ship.turn_finished = 1;
             this.active_ship = null;
+            this.activeShipName.text = "";
+            this.activeShipHealth.text = "";
+            this.activeShipArmor.text = "";
+            this.activeShipShields.text = "";
+            this.activeShipCoreStress.text = "";
         }
         let ships_to_act = this.getReadyShipsForCurrentInitiative();
         
@@ -625,7 +647,7 @@ class SceneMain extends Phaser.Scene {
             this.active_team = 1;
         }
 
-        // loop through initiatives until we hit one with ships that 
+        // loop through initiatives until we hit one with ships that are ready to act
         let loop_count = 0;
         let starting_initiative = this.current_iniative;
         console.log(ships_to_act.ready_ships);
