@@ -330,6 +330,11 @@ class SceneMain extends Phaser.Scene {
     }
 
     validateFieldOfFire(attacker, target, hard_point) {
+
+        if(this.distanceToTarget(attacker, target) > hard_point.turret.values.range * this.tile_size * 1.5) {
+            return false;
+        }
+
         let actual_fields_of_fire = [];
         hard_point.fields_of_fire.forEach((field) => {
             actual_fields_of_fire.push((field + attacker.facing) % 8);
@@ -454,9 +459,14 @@ class SceneMain extends Phaser.Scene {
             valid = false;
         }
 
+        if(this.distanceToTarget(moving_ship, {x: target_x, y: target_y}) > moving_ship.speed * this.tile_size * 1.5) {
+            valid = false;
+        }
+
         if(valid) {
             valid = this.considerFacing({x: target_x, y: target_y}, moving_ship);
         }
+
         return valid;
     }
 
@@ -497,6 +507,10 @@ class SceneMain extends Phaser.Scene {
 
         // if positive, then on the right side of the slope, if negative, the left side
         return (slope.x - ship.x) * (target.y - ship.y) - (slope.y - ship.y) * (target.x - ship.x);
+    }
+
+    distanceToTarget(source, target) {
+        return Math.floor(Math.sqrt(Math.pow(target.x - source.x, 2) + Math.pow(target.y - source.y, 2)));
     }
 
     moveActiveShip(targetSquare) {
@@ -554,6 +568,7 @@ class SceneMain extends Phaser.Scene {
         turrets.forEach((turret) => {
             let new_attack_line = new AttackLine({scene: this, attacker: attacker, target: target, attack_name: turret.values.name, lifespan: 200, offset: attack_offset});
             attack_offset += 2;
+            this.bottomHUDCamera.ignore(new_attack_line);
             this.attackLines.push(new_attack_line);
             console.log("Attacking face " + attack_face + " of " + target.ship_id);
             for(var i = 0; i < turret.values.attacks_per_round; i++) {
@@ -581,8 +596,9 @@ class SceneMain extends Phaser.Scene {
         let square_size = 32;
         attacker.hull.hard_points.forEach((hard_point) => {
             if(hard_point.turret) {
-                if(Math.abs(target.x - attacker.x) <= hard_point.turret.values.range * square_size && 
-                    Math.abs(target.y - attacker.y) <= hard_point.turret.values.range * square_size) {
+                //if(Math.abs(target.x - attacker.x) <= hard_point.turret.values.range * square_size && 
+                 //   Math.abs(target.y - attacker.y) <= hard_point.turret.values.range * square_size) {
+                if(this.distanceToTarget(attacker, target) <= hard_point.turret.values.range * square_size) {
                         turrets.push(hard_point.turret);
                 }
             }
