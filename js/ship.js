@@ -12,7 +12,7 @@ class Ship extends Phaser.GameObjects.Sprite {
         } else if (this.team === 2) {
             this.team_color = 0xffff00;
         }
-        this.team_marker = new Phaser.GameObjects.Rectangle(
+        this.team_marker = new Phaser.GameObjects.Ellipse(
             config.scene, 
             config.x, 
             config.y, 

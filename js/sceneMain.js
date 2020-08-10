@@ -26,25 +26,25 @@ class SceneMain extends Phaser.Scene {
         this.max_turns = 30;
         this.current_iniative = 0;
         this.action_taken = 0;
-        this.map_width = 608;
-        this.map_height = 608;
+        this.map_width = 1280;
+        this.map_height = 1280;
 
         // TODO: setup main camera and hud camera
-        this.cameras.main.setViewport(0, 0, 608, 608);
-        this.cameras.main.setBounds(0, 0, 1200, 1200);
-        this.cameras.main.useBounds = false;
+        this.cameras.main.setViewport(0, 0, 608, 500);
+        this.cameras.main.setBounds(-50, -50, this.map_width + 50, this.map_height + 50);
+
         this.mainCameraControls = new Phaser.Cameras.Controls.FixedKeyControl({
             camera: this.cameras.main,
-            up: Phaser.Input.Keyboard.KeyCodes.W,
-            left: Phaser.Input.Keyboard.KeyCodes.A,
-            down: Phaser.Input.Keyboard.KeyCodes.S,
-            right: Phaser.Input.Keyboard.KeyCodes.D,
+            up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+            left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+            down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+            right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
             speed: 1.0
         });
         this.mainCameraControls.start();
 
-        this.bottomHUDCamera = new Phaser.Cameras.Scene2D.Camera(0, 608, 608, 500);
-        this.bottomHUDCamera.setViewport(0, 608, 608, 300);
+        this.bottomHUDCamera = new Phaser.Cameras.Scene2D.Camera(0, 500, 608, 500);
+        this.bottomHUDCamera.setScroll(0, 608);
         this.cameras.addExisting(this.bottomHUDCamera);
 
         this.drawMapBoundry();
@@ -74,7 +74,7 @@ class SceneMain extends Phaser.Scene {
         this.showActiveTeamShips(this.active_team);
     }
 
-    update() {
+    update(time, delta) {
         this.attackLines.forEach((line) => {
             if(line.lifespan > 0) {
                 line.fade();
@@ -82,10 +82,11 @@ class SceneMain extends Phaser.Scene {
                 line.destroy();
             }
         });
-        this.mainCameraControls.update();
+        this.mainCameraControls.update(delta);
     }
 
     createUIButtons() {
+        let buttons = [];
         this.end_turn_button = new UIButton({
             scene: this,
             x: 500,
@@ -95,6 +96,7 @@ class SceneMain extends Phaser.Scene {
             display_width: 96,
             display_height: 48
         });
+        buttons.push(this.end_turn_button);
 
         this.move_action_button = new UIButton({
             scene: this,
@@ -105,6 +107,8 @@ class SceneMain extends Phaser.Scene {
             display_width: 96,
             display_height: 96,
         });
+        buttons.push(this.move_action_button);
+
         this.turn_action_button = new UIButton({
             scene: this,
             x: 150,
@@ -114,6 +118,8 @@ class SceneMain extends Phaser.Scene {
             display_width: 96,
             display_height: 96,
         });
+        buttons.push(this.turn_action_button);
+
         this.attack_action_button = new UIButton({
             scene: this,
             x: 250,
@@ -123,25 +129,37 @@ class SceneMain extends Phaser.Scene {
             display_width: 96,
             display_height: 96,
         });
+        buttons.push(this.attack_action_button);
+
+        this.cameras.main.ignore(buttons);
     }
 
     createUIInfoDisplay() {
         this.activeShipName = this.add.text(20, 720, "", {fontFamily: 'Arial'});
+        this.cameras.main.ignore(this.activeShipName);
         this.activeShipHealth = this.add.text(20, 735, "", {fontFamily: 'Arial'});
+        this.cameras.main.ignore(this.activeShipHealth);
         this.activeShipArmor = this.add.text(20, 750, "", {fontFamily: 'Arial'});
+        this.cameras.main.ignore(this.activeShipArmor);
         this.activeShipShields = this.add.text(20, 765, "", {fontFamily: 'Arial'});
+        this.cameras.main.ignore(this.activeShipShields);
         this.activeShipCoreStress = this.add.text(20, 780, "", {fontFamily: 'Arial'});
+        this.cameras.main.ignore(this.activeShipCoreStress);
     }
 
     drawMapBoundry() {
         let top_line = this.add.line(0, 0, 1, 1, this.map_width, 1, 0xffffff);
         top_line.setOrigin(0, 0);
+        this.bottomHUDCamera.ignore(top_line);
         let left_line = this.add.line(0, 0, 1, 1, 1, this.map_height, 0xffffff);
         left_line.setOrigin(0, 0);
+        this.bottomHUDCamera.ignore(left_line);
         let right_line = this.add.line(0, 0, this.map_width, 1, this.map_width, this.map_height, 0xffffff);
         right_line.setOrigin(0, 0);
+        this.bottomHUDCamera.ignore(right_line);
         let bottom_line = this.add.line(0, 0, 1, this.map_height, this.map_width, this.map_height, 0xffffff);
         bottom_line.setOrigin(0, 0);
+        this.bottomHUDCamera.ignore(bottom_line);
     }
 
     loadInitialGameState() {
@@ -164,6 +182,8 @@ class SceneMain extends Phaser.Scene {
                     next_ship.restoreFromSaveObject(ship_info);
                     console.log("created new ship " + ship_id);
                     this.allShips.push(next_ship);
+                    this.bottomHUDCamera.ignore(next_ship);
+                    this.bottomHUDCamera.ignore(next_ship.team_marker);
                 });
             }
         }
@@ -244,8 +264,6 @@ class SceneMain extends Phaser.Scene {
                 for( var j = 0; j <= ship.speed; j++) {
                     if (i == 0 && j == 0) {
                         continue;
-                    } else if (i + j > ship.speed) {
-                        continue;
                     }
 
                     let plus_y = ship.y + (j * this.tile_size);
@@ -265,6 +283,9 @@ class SceneMain extends Phaser.Scene {
                 }
             }
         }
+        this.movementSquares.forEach((square) => {
+            this.bottomHUDCamera.ignore(square);
+        });
     }
 
     drawAttacks(ship) {
@@ -283,8 +304,6 @@ class SceneMain extends Phaser.Scene {
                     for(var j = 0; j <= hard_point.turret.values.range; j++) {
                         // Can't shoot ourselves
                         if (i == 0 && j == 0) {
-                            continue;
-                        } else if (i + j > hard_point.turret.values.range) {
                             continue;
                         }
                         let plus_y = ship.y + (j * this.tile_size);
@@ -305,7 +324,9 @@ class SceneMain extends Phaser.Scene {
                 }    
             }
         })
-
+        this.attackSquares.forEach((square) => {
+            this.bottomHUDCamera.ignore(square);
+        });
     }
 
     validateFieldOfFire(attacker, target, hard_point) {
@@ -415,7 +436,9 @@ class SceneMain extends Phaser.Scene {
                 }
             }
         }
-        
+        this.facingSquares.forEach((square) => {
+            this.bottomHUDCamera.ignore(square);
+        });
     }
 
     validateMove(target_x, target_y, moving_ship) {
