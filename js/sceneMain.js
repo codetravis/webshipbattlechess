@@ -29,6 +29,24 @@ class SceneMain extends Phaser.Scene {
         this.map_width = 608;
         this.map_height = 608;
 
+        // TODO: setup main camera and hud camera
+        this.cameras.main.setViewport(0, 0, 608, 608);
+        this.cameras.main.setBounds(0, 0, 1200, 1200);
+        this.cameras.main.useBounds = false;
+        this.mainCameraControls = new Phaser.Cameras.Controls.FixedKeyControl({
+            camera: this.cameras.main,
+            up: Phaser.Input.Keyboard.KeyCodes.W,
+            left: Phaser.Input.Keyboard.KeyCodes.A,
+            down: Phaser.Input.Keyboard.KeyCodes.S,
+            right: Phaser.Input.Keyboard.KeyCodes.D,
+            speed: 1.0
+        });
+        this.mainCameraControls.start();
+
+        this.bottomHUDCamera = new Phaser.Cameras.Scene2D.Camera(0, 608, 608, 500);
+        this.bottomHUDCamera.setViewport(0, 608, 608, 300);
+        this.cameras.addExisting(this.bottomHUDCamera);
+
         this.drawMapBoundry();
         this.tile_size = 32;
         this.allShips = [];
@@ -54,6 +72,17 @@ class SceneMain extends Phaser.Scene {
         this.loadInitialGameState();
         this.endTurn();
         this.showActiveTeamShips(this.active_team);
+    }
+
+    update() {
+        this.attackLines.forEach((line) => {
+            if(line.lifespan > 0) {
+                line.fade();
+            } else {
+                line.destroy();
+            }
+        });
+        this.mainCameraControls.update();
     }
 
     createUIButtons() {
@@ -138,16 +167,6 @@ class SceneMain extends Phaser.Scene {
                 });
             }
         }
-    }
-
-    update() {
-        this.attackLines.forEach((line) => {
-            if(line.lifespan > 0) {
-                line.fade();
-            } else {
-                line.destroy();
-            }
-        });
     }
 
     setActiveShip(ship) {
