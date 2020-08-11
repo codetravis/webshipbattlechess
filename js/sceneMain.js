@@ -18,6 +18,10 @@ class SceneMain extends Phaser.Scene {
         this.load.image("move_action_button", "images/move_action_button.svg");
         this.load.image("turn_action_button", "images/turn_action_button.svg");
         this.load.image("attack_action_button", "images/attack_action_button.svg");
+        this.load.image("charge_shield_front_button", "images/charge_shield_front_button.svg");
+        this.load.image("charge_shield_right_button", "images/charge_shield_right_button.svg");
+        this.load.image("charge_shield_left_button", "images/charge_shield_left_button.svg");
+        this.load.image("charge_shield_rear_button", "images/charge_shield_rear_button.svg");
     }
 
     create() {
@@ -68,6 +72,10 @@ class SceneMain extends Phaser.Scene {
         this.emitter.on("FACE_CLICKED", this.faceActiveShip.bind(this));
         this.emitter.on("ATTACK_CLICKED", this.attackTargetShip.bind(this));
         this.emitter.on("END_TURN", this.endTurn.bind(this));
+        this.emitter.on("CHARGE_SHIELD_FRONT", this.chargeActiveShipShield.bind(this));
+        this.emitter.on("CHARGE_SHIELD_RIGHT", this.chargeActiveShipShield.bind(this));
+        this.emitter.on("CHARGE_SHIELD_LEFT", this.chargeActiveShipShield.bind(this));
+        this.emitter.on("CHARGE_SHIELD_REAR", this.chargeActiveShipShield.bind(this));
 
         this.loadInitialGameState();
         this.endTurn();
@@ -130,6 +138,47 @@ class SceneMain extends Phaser.Scene {
             display_height: 96,
         });
         buttons.push(this.attack_action_button);
+
+        this.charge_shield_front_button = new UIButton({
+            scene: this,
+            x: 550,
+            y: 750,
+            action_name: "CHARGE_SHIELD_FRONT",
+            key: "charge_shield_front_button",
+            display_width: 96,
+            display_height: 96,
+        });
+        buttons.push(this.charge_shield_front_button);
+        this.charge_shield_right_button = new UIButton({
+            scene: this,
+            x: 575,
+            y: 825,
+            action_name: "CHARGE_SHIELD_RIGHT",
+            key: "charge_shield_right_button",
+            display_width: 96,
+            display_height: 96,
+        });
+        buttons.push(this.charge_shield_right_button);
+        this.charge_shield_left_button = new UIButton({
+            scene: this,
+            x: 500,
+            y: 825,
+            action_name: "CHARGE_SHIELD_LEFT",
+            key: "charge_shield_left_button",
+            display_width: 96,
+            display_height: 96,
+        });
+        buttons.push(this.charge_shield_left_button);
+        this.charge_shield_rear_button = new UIButton({
+            scene: this,
+            x: 550,
+            y: 900,
+            action_name: "CHARGE_SHIELD_REAR",
+            key: "charge_shield_rear_button",
+            display_width: 96,
+            display_height: 96,
+        });
+        buttons.push(this.charge_shield_rear_button);
 
         this.cameras.main.ignore(buttons);
     }
@@ -698,6 +747,21 @@ class SceneMain extends Phaser.Scene {
         });
 
         return { ready_ships: ships_to_act, team_1_ships: team_one_ships, team_2_ships: team_two_ships};
+    }
+
+    chargeActiveShipShield(shieldButton) {
+        if(this.active_ship) {
+            console.log("Attempting to charge shield for ship: " + this.active_ship.ship_id);
+            if(shieldButton.action_name.includes("FRONT")) {
+                this.active_ship.chargeShields("front");
+            } else if(shieldButton.action_name.includes("RIGHT")) {
+                this.active_ship.chargeShields("right");
+            } else if(shieldButton.action_name.includes("LEFT")) {
+                this.active_ship.chargeShields("left");
+            } else if(shieldButton.action_name.includes("REAR")) {
+                this.active_ship.chargeShields("rear");
+            }
+        }
     }
 
     // TODO: rework this logic a bit, something still not quite right
