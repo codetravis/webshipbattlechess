@@ -22,6 +22,7 @@ class SceneMain extends Phaser.Scene {
         this.load.image("charge_shield_right_button", "images/charge_shield_right_button.svg");
         this.load.image("charge_shield_left_button", "images/charge_shield_left_button.svg");
         this.load.image("charge_shield_rear_button", "images/charge_shield_rear_button.svg");
+        this.load.image("no_ship_selected", "images/movement_square.svg");
     }
 
     create() {
@@ -32,6 +33,7 @@ class SceneMain extends Phaser.Scene {
         this.action_taken = 0;
         this.map_width = 1280;
         this.map_height = 1280;
+        this.tile_size = 32;
 
         // TODO: setup main camera and hud camera
         this.cameras.main.setViewport(0, 0, 608, 500);
@@ -52,7 +54,6 @@ class SceneMain extends Phaser.Scene {
         this.cameras.addExisting(this.bottomHUDCamera);
 
         this.drawMapBoundry();
-        this.tile_size = 32;
         this.allShips = [];
         this.active_ship = null;
         this.movementSquares = [];
@@ -141,7 +142,7 @@ class SceneMain extends Phaser.Scene {
 
         this.charge_shield_front_button = new UIButton({
             scene: this,
-            x: 550,
+            x: 540,
             y: 750,
             action_name: "CHARGE_SHIELD_FRONT",
             key: "charge_shield_front_button",
@@ -151,8 +152,8 @@ class SceneMain extends Phaser.Scene {
         buttons.push(this.charge_shield_front_button);
         this.charge_shield_right_button = new UIButton({
             scene: this,
-            x: 575,
-            y: 825,
+            x: 605,
+            y: 800,
             action_name: "CHARGE_SHIELD_RIGHT",
             key: "charge_shield_right_button",
             display_width: 96,
@@ -161,8 +162,8 @@ class SceneMain extends Phaser.Scene {
         buttons.push(this.charge_shield_right_button);
         this.charge_shield_left_button = new UIButton({
             scene: this,
-            x: 500,
-            y: 825,
+            x: 480,
+            y: 800,
             action_name: "CHARGE_SHIELD_LEFT",
             key: "charge_shield_left_button",
             display_width: 96,
@@ -171,14 +172,19 @@ class SceneMain extends Phaser.Scene {
         buttons.push(this.charge_shield_left_button);
         this.charge_shield_rear_button = new UIButton({
             scene: this,
-            x: 550,
-            y: 900,
+            x: 540,
+            y: 855,
             action_name: "CHARGE_SHIELD_REAR",
             key: "charge_shield_rear_button",
             display_width: 96,
             display_height: 96,
         });
         buttons.push(this.charge_shield_rear_button);
+
+        this.active_ship_image = this.add.image(540, 800, "no_ship_selected");
+        this.active_ship_image.displayWidth = this.tile_size;
+        this.active_ship_image.displayHeight = this.tile_size;
+        buttons.push(this.active_ship_image);
 
         this.cameras.main.ignore(buttons);
     }
@@ -260,12 +266,14 @@ class SceneMain extends Phaser.Scene {
             this.activeShipShields.text = "Shields: Front - " + ship.hull.front_shield + " Right - "  + 
                 ship.hull.right_shield + " Rear - " + ship.hull.rear_shield + " Left - " + ship.hull.left_shield;
             this.activeShipCoreStress.text = "Core Stress: " + ship.core_stress + "/" + ship.hull.max_core_stress;
+            this.active_ship_image.setTexture(ship.hull_name);
         } else {
             this.activeShipName.text = "";
             this.activeShipHealth.text = "";
             this.activeShipArmor.text = "";
             this.activeShipShields.text = "";
             this.activeShipCoreStress.text = "";
+            this.active_ship_image.setTexture("no_ship_selected");
         }
 
     }
@@ -380,7 +388,7 @@ class SceneMain extends Phaser.Scene {
 
     validateFieldOfFire(attacker, target, hard_point) {
 
-        if(this.distanceToTarget(attacker, target) > hard_point.turret.values.range * this.tile_size * 1.5) {
+        if(this.distanceToTarget(attacker, target) > hard_point.turret.values.range * this.tile_size) {
             return false;
         }
 
@@ -508,7 +516,7 @@ class SceneMain extends Phaser.Scene {
             valid = false;
         }
 
-        if(this.distanceToTarget(moving_ship, {x: target_x, y: target_y}) > moving_ship.speed * this.tile_size * 1.5) {
+        if(this.distanceToTarget(moving_ship, {x: target_x, y: target_y}) > moving_ship.speed * this.tile_size) {
             valid = false;
         }
 

@@ -134,9 +134,11 @@ class Ship extends Phaser.GameObjects.Sprite {
                 amount = Math.max(1, Math.floor(amount * .90));
             }
 
-            // ion beams do reduced damage to armor
+            // ion beams do reduced damage to armor and also do stress damage to the ship
             if(type === "ion") {
-                amount = Math.max(1, Math.floor(amount * .50));
+                let stress_amount = Math.max(1, Math.floor(amount * .50));
+                amount = Math.max(1, Math.floor(amount * .20));
+                this.payCoreStress(stress_amount);
             }
 
             this.hull[face + "_armor"] = Math.max(0, this.hull[face + "_armor"] - amount);
@@ -181,9 +183,11 @@ class Ship extends Phaser.GameObjects.Sprite {
         if(this.shield_generation < this.hull.shield_generator) {
             let hullStats = new HullStats();
             let baseStats = hullStats.getBaseHullStats(this.hull_name);
-            this.hull[face + "_shield"] = Math.min(baseStats[face + "_shield"], this.hull[face + "_shield"] + 10);
-            this.payCoreStress(5);
-            this.shield_generation += 1;
+            if(this.hull[face + "_shield"] < baseStats[face + "_shield"]) {
+                this.hull[face + "_shield"] = Math.min(baseStats[face + "_shield"], this.hull[face + "_shield"] + 10);
+                this.payCoreStress(5);
+                this.shield_generation += 1;
+            }
         }
     }
 
@@ -227,6 +231,11 @@ class Ship extends Phaser.GameObjects.Sprite {
                 this.addTurret(hard_point.id, hard_point.turret.name);
             }
         });
+    }
+
+    destroy() {
+        this.team_marker.destroy();
+        super();
     }
 
 }
