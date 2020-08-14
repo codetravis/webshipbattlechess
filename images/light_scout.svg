@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -7,35 +9,34 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="light_scout.svg"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   id="svg8"
-   version="1.1"
-   viewBox="0 0 210 297"
+   width="210mm"
    height="297mm"
-   width="210mm">
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="light_scout.svg">
   <defs
      id="defs2" />
   <sodipodi:namedview
-     inkscape:window-maximized="0"
-     inkscape:window-y="0"
-     inkscape:window-x="192"
-     inkscape:window-height="1030"
-     inkscape:window-width="1424"
-     inkscape:snap-nodes="false"
-     showgrid="false"
-     inkscape:document-rotation="0"
-     inkscape:current-layer="layer1"
-     inkscape:document-units="mm"
-     inkscape:cy="560"
-     inkscape:cx="400"
-     inkscape:zoom="0.35"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0.0"
-     borderopacity="1.0"
-     bordercolor="#666666"
+     id="base"
      pagecolor="#ffffff"
-     id="base" />
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="-75.714286"
+     inkscape:cy="560"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:snap-global="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -49,42 +50,67 @@
     </rdf:RDF>
   </metadata>
   <g
-     id="layer1"
+     inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     inkscape:label="Layer 1">
+     id="layer1">
     <rect
-       y="185.20833"
-       x="54.42857"
-       height="100.54166"
-       width="105.83333"
-       id="rect10"
-       style="fill:#800000;stroke-width:0.327136" />
+       style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:2.9690001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
+       id="rect815"
+       width="26.458332"
+       height="154.21428"
+       x="89.958336"
+       y="77.017853" />
+    <path
+       style="fill:#ff0000;fill-opacity:1;stroke:#ff7777;stroke-width:0.7777226;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
+       d="m 89.46244,160.08529 -21.140838,15.38947 21.492799,-0.0168 v -15.11861 z"
+       id="path817"
+       inkscape:connector-curvature="0" />
     <rect
-       y="40.82143"
-       x="84.666664"
-       height="152.70239"
-       width="47.625"
-       id="rect12"
-       style="fill:#800000;stroke-width:0.264583" />
+       style="fill:#ff0000;fill-opacity:1;stroke:#ff7777;stroke-width:2.9690001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
+       id="rect819"
+       width="19.654762"
+       height="53.672619"
+       x="69.54763"
+       y="177.55952" />
+    <rect
+       style="fill:#ff0000;fill-opacity:1;stroke:#ff7777;stroke-width:2.9690001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
+       id="rect819-7"
+       width="19.654762"
+       height="53.672619"
+       x="116.41667"
+       y="177.55951" />
+    <rect
+       style="fill:#ff0000;fill-opacity:1;stroke:#ff7777;stroke-width:2.9690001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
+       id="rect819-4"
+       width="19.654762"
+       height="53.672619"
+       x="93.738106"
+       y="177.55952" />
+    <rect
+       style="fill:#ff0000;fill-opacity:1;stroke:#ff7777;stroke-width:2.9690001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
+       id="rect851"
+       width="17.386906"
+       height="14.363094"
+       x="94.494049"
+       y="161.68452" />
     <ellipse
-       ry="14.363094"
-       rx="38.175598"
-       cy="39.309521"
-       cx="107.72321"
-       id="path14"
-       style="fill:#800000;stroke-width:0.264583" />
-    <circle
-       r="11.339286"
-       cy="106.58928"
-       cx="108.85714"
-       id="path16"
-       style="fill:#008080;stroke-width:0.264583" />
+       style="fill:#898989;fill-opacity:1;stroke:none;stroke-width:2.9690001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
+       id="path853"
+       cx="102.80953"
+       cy="114.05953"
+       rx="7.5595236"
+       ry="8.3154764" />
+    <path
+       style="fill:#ff0000;fill-opacity:1;stroke:#ff7777;stroke-width:0.73728722;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
+       d="m 116.92689,160.77314 18.94989,15.42991 -19.26538,-0.0169 v -15.15833 z"
+       id="path817-9"
+       inkscape:connector-curvature="0" />
     <rect
-       y="34.017857"
-       x="86.178566"
-       height="1.5119048"
-       width="47.625"
-       id="rect18"
-       style="fill:#008080;stroke-width:0.264583" />
+       style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:2.9690001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
+       id="rect874"
+       width="21.166666"
+       height="9.8273811"
+       x="92.226189"
+       y="68.702385" />
   </g>
 </svg>

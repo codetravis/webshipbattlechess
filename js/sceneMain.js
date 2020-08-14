@@ -769,11 +769,20 @@ class SceneMain extends Phaser.Scene {
             } else if(shieldButton.action_name.includes("REAR")) {
                 this.active_ship.chargeShields("rear");
             }
+            this.setShipInfoDisplay(this.active_ship);
         }
     }
 
     // TODO: rework this logic a bit, something still not quite right
     endTurn() {
+
+        // need to update this logic later but this stops us from getting
+        // into a infinite loop when ending up with no ships
+        if(this.allShips.length === 0) {
+            this.scene.start('SceneVictory');
+            return;
+        }
+
         if(this.active_ship) {
             this.active_ship.turn_finished = 1;
             this.active_ship = null;

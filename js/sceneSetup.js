@@ -31,7 +31,6 @@ class SceneSetup extends Phaser.Scene {
         this.storePage = 1;
         this.storePageSize = 3;
         this.storeState = "BUYING_HULL";
-        this.loadShipCards();
         
         this.team = 1;
         this.max_teams = 2;
@@ -88,6 +87,7 @@ class SceneSetup extends Phaser.Scene {
             display_height: 64
         });
 
+        this.loadShipCards();
         this.creditsRemaining = this.add.text(50, 250, "Credits Remaining: " + this.gameState["team_" + this.team + "_credits"], {fontFamily: 'Arial'});
         this.displayCardName = this.add.text(50, 300, "Nothing Selected", {fontFamily: 'Arial'});
         this.displayCardCost = this.add.text(50, 320, "Cost: ", {fontFamily: 'Arial'});
@@ -103,14 +103,35 @@ class SceneSetup extends Phaser.Scene {
     }
 
     startGame() {
+        let ship_count = Object.keys(this.gameState["team_" + this.team + "_fleet"]);
         if(this.team < this.max_teams) {
+            if(ship_count.length === 0) {
+                console.log("cannot continue with no ships in fleet");
+                return;
+            }
             console.log("Next team's setup begins");
+            this.hideFleet(this.team);
             this.team++;
             this.creditsRemaining.text = "Credits Remaining: " + this.gameState["team_" + this.team + "_credits"];
             this.loadShipCards();
         } else {
+            this.setInitialShipPostions();
             this.saveGameState();
             this.scene.start('SceneMain');
+        }
+    }
+
+    hideFleet(team) {
+        Object.keys(this.gameState["team_" + team + "_fleet"]).forEach((ship_id) => {
+            this.gameState["team_" + team + "_fleet"][ship_id].hideMe();
+        });
+    }
+
+    setInitialShipPostions() {
+        for(var i = 1; i <= this.max_teams; i++) {
+            Object.keys(this.gameState["team_" + i + "_fleet"]).forEach((ship_id) => {
+                this.gameState["team_" + i + "_fleet"][ship_id].y = this.tile_size + (i - 1) * this.map_height;
+            });
         }
     }
 
@@ -149,6 +170,7 @@ class SceneSetup extends Phaser.Scene {
         }
         this.clearStore();
         this.storeState = "BUYING_HULL";
+        this.startGameButton.visible = true
         let hullStats = new HullStats();
         console.log(hullStats.hulls);
         let card_count = 1;
@@ -183,6 +205,7 @@ class SceneSetup extends Phaser.Scene {
         }
         this.clearStore();
         this.storeState = "BUYING_TURRET";
+        this.startGameButton.visible = false;
         let turretStats = new TurretStats();
         let card_count = 1;
         let display_order = 1;
@@ -240,8 +263,8 @@ class SceneSetup extends Phaser.Scene {
             let next_ship_id = this.gameState.last_ship_id + 1;
             let new_ship = new Ship({ 
                 scene: this, 
-                x: next_ship_id * 32, 
-                y: this.tile_size + (this.team - 1) * (this.map_height - (this.tile_size * 2)),
+                x: this.tile_size * 2 + next_ship_id * this.tile_size, 
+                y: 800,
                 hull_name: this.selectedCard.item_name,
                 team: this.team, 
                 facing: (this.team * 4) % 8, 

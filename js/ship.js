@@ -235,7 +235,6 @@ class Ship extends Phaser.GameObjects.Sprite {
 
     destroy() {
         this.team_marker.destroy();
-        super();
     }
 
 }
