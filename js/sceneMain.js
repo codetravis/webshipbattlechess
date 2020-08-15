@@ -24,6 +24,7 @@ class SceneMain extends Phaser.Scene {
         this.load.image("charge_shield_right_button", "images/charge_shield_right_button.svg");
         this.load.image("charge_shield_left_button", "images/charge_shield_left_button.svg");
         this.load.image("charge_shield_rear_button", "images/charge_shield_rear_button.svg");
+        this.load.image("reset_core_button", "images/movement_square.svg");
         this.load.image("no_ship_selected", "images/movement_square.svg");
     }
 
@@ -142,19 +143,6 @@ class SceneMain extends Phaser.Scene {
             display_height: 96,
         });
         buttons.push(this.attack_action_button);
-
-        this.core_overload_reset_button = new UIButton({
-            scene: this,
-            x: 350,
-            y: 680,
-            action_name: "RESET_CORE_UPLOAD",
-            key: "no_image_given",
-            display_width: 96,
-            display_width: 96,
-        });
-        buttons.push(this.core_overload_reset_button);
-        console.log("overload reset button created");
-
 
         this.charge_shield_front_button = new UIButton({
             scene: this,
