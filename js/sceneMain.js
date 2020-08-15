@@ -7,6 +7,8 @@ class SceneMain extends Phaser.Scene {
         this.load.image("light_freighter", "images/light_freighter.svg");
         this.load.image("light_scout", "images/light_scout.svg");
         this.load.image("wedge_destroyer", "images/wedge_destroyer.svg");
+        this.load.image("medium_freighter", "images/medium_freighter.svg");
+        this.load.image("drudge_freighter", "images/drudge_freighter.svg");
         this.load.image("move_square", "images/movement_square.svg");
         this.load.image("attack_square", "images/attack_square.svg");
         this.load.image("end_button", "images/movement_square.svg");
@@ -77,6 +79,7 @@ class SceneMain extends Phaser.Scene {
         this.emitter.on("CHARGE_SHIELD_RIGHT", this.chargeActiveShipShield.bind(this));
         this.emitter.on("CHARGE_SHIELD_LEFT", this.chargeActiveShipShield.bind(this));
         this.emitter.on("CHARGE_SHIELD_REAR", this.chargeActiveShipShield.bind(this));
+        this.emitter.on("RESET_CORE_UPLOAD", this.resetActiveShipCore.bind(this));
 
         this.loadInitialGameState();
         this.endTurn();
@@ -139,6 +142,19 @@ class SceneMain extends Phaser.Scene {
             display_height: 96,
         });
         buttons.push(this.attack_action_button);
+
+        this.core_overload_reset_button = new UIButton({
+            scene: this,
+            x: 350,
+            y: 680,
+            action_name: "RESET_CORE_UPLOAD",
+            key: "no_image_given",
+            display_width: 96,
+            display_width: 96,
+        });
+        buttons.push(this.core_overload_reset_button);
+        console.log("overload reset button created");
+
 
         this.charge_shield_front_button = new UIButton({
             scene: this,
@@ -267,6 +283,9 @@ class SceneMain extends Phaser.Scene {
                 ship.hull.right_shield + " Rear - " + ship.hull.rear_shield + " Left - " + ship.hull.left_shield;
             this.activeShipCoreStress.text = "Core Stress: " + ship.core_stress + "/" + ship.hull.max_core_stress;
             this.active_ship_image.setTexture(ship.hull_name);
+            if(ship.core_overload === 1) {
+                //this.core_overload_reset_button.visible = true;
+            }
         } else {
             this.activeShipName.text = "";
             this.activeShipHealth.text = "";
@@ -274,6 +293,7 @@ class SceneMain extends Phaser.Scene {
             this.activeShipShields.text = "";
             this.activeShipCoreStress.text = "";
             this.active_ship_image.setTexture("no_ship_selected");
+            //this.core_overload_reset_button.visible = false;
         }
 
     }
@@ -770,6 +790,16 @@ class SceneMain extends Phaser.Scene {
                 this.active_ship.chargeShields("rear");
             }
             this.setShipInfoDisplay(this.active_ship);
+        }
+    }
+
+    resetActiveShipCore() {
+        if(this.active_ship) {
+            if(this.active_ship.core_overload === 1) {
+                this.active_ship.coreOverloadReset();
+                //this.core_overload_reset_button.visible = false;
+                this.action_taken = 1;
+            }
         }
     }
 

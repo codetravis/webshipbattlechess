@@ -41,6 +41,7 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.shield_generation = 0;
         this.data_object = 0;
         this.reserved = 0;
+        this.core_overload = 0;
         
 
         this.setInteractive();
@@ -68,18 +69,22 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.has_faced = 1;
     }
 
+    coreOverloadReset() {
+        this.core_stress = Math.max(0, this.hull.max_core_stress - this.hull.core_cooling * 3);
+        this.core_overload = 0;
+        this.turn_finished = 1;
+    }
+
     prepareForAction() {
-        if(this.core_stress >= this.hull.max_core_stress) {
-            this.core_stress = Math.max(0, this.core_stress - this.hull.core_cooling * 3);
-        } else {
+        if(this.core_overload === 0) {
             this.has_moved = 0;
             this.has_faced = 0;
             this.has_attacked = 0;
             this.shield_generation = 0;
-            this.turn_finished = 0;
             this.core_stress = Math.max(0, this.core_stress - this.hull.core_cooling);
             this.reserved = 0;
         }
+        this.turn_finished = 0;
     }
 
     hideMe() {
@@ -177,6 +182,14 @@ class Ship extends Phaser.GameObjects.Sprite {
             console.log("Over stressed core caused internal damage");
             this.hull.core_health -= 1;
         }
+
+        if(this.core_stress >= this.hull.max_core_stress) {
+            this.core_overload = 1;
+            this.turn_finished = 1;
+            this.has_moved = 1;
+            this.has_attacked = 1;
+            this.has_faced = 1;
+        }
     }
 
     chargeShields(face) {
@@ -231,10 +244,6 @@ class Ship extends Phaser.GameObjects.Sprite {
                 this.addTurret(hard_point.id, hard_point.turret.name);
             }
         });
-    }
-
-    destroy() {
-        this.team_marker.destroy();
     }
 
 }
