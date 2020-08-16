@@ -29,6 +29,7 @@ class SceneSetup extends Phaser.Scene {
         this.loadGameState();
         this.selectedCard = null;
         this.active_ship = null;
+        this.active_hard_point_id = null;
         this.cardsInStore = [];
         this.storePage = 1;
         this.storePageSize = 3;
@@ -69,7 +70,7 @@ class SceneSetup extends Phaser.Scene {
             display_height: 48
         });
 
-        this.nextButton = new UIButton({
+        this.nextStoreButton = new UIButton({
             scene: this,
             x: 520,
             y: 100,
@@ -79,7 +80,7 @@ class SceneSetup extends Phaser.Scene {
             display_height: 64
         });
 
-        this.previousButton = new UIButton({
+        this.previousStoreButton = new UIButton({
             scene: this,
             x: 48,
             y: 100,
@@ -88,6 +89,31 @@ class SceneSetup extends Phaser.Scene {
             display_width: 48,
             display_height: 64
         });
+
+        this.nextHardPointButton = new UIButton({
+            scene: this,
+            x: 520,
+            y: 390,
+            action_name: "HARD_POINT_NEXT",
+            key:"next_arrow",
+            display_width: 48,
+            display_height: 48
+        });
+
+        this.previousHardPointButton = new UIButton({
+            scene: this,
+            x: 48,
+            y: 390,
+            action_name: "HARD_POINT_PREVIOUS",
+            key: "previous_arrow",
+            display_width: 48,
+            display_height: 48
+        });
+
+        this.hard_point_name = this.add.text(80, 370, "", {fontFamily: 'Arial'});
+        this.hard_point_fof = this.add.text(80, 390, "", {fontFamily: 'Arial'});
+        this.hard_point_size = this.add.text(80, 410, "", {fontFamily: 'Arial'});
+        this.hard_point_turret_name = this.add.text(80, 430, "", {fontFamily: 'Arial'});
 
         this.loadShipCards();
         this.creditsRemaining = this.add.text(50, 250, "Credits Remaining: " + this.gameState["team_" + this.team + "_credits"], {fontFamily: 'Arial'});
@@ -102,6 +128,8 @@ class SceneSetup extends Phaser.Scene {
         this.emitter.on("DONE_WITH_SHIP", this.loadShipCards.bind(this));
         this.emitter.on("STORE_NEXT", this.nextStorePage.bind(this));
         this.emitter.on("STORE_PREVIOUS", this.previousStorePage.bind(this));
+        this.emitter.on("HARD_POINT_NEXT", this.nextHardPoint.bind(this));
+        this.emitter.on("HARD_POINT_PREVIOUS", this.previousHardPoint.bind(this));
     }
 
     startGame() {
@@ -166,13 +194,35 @@ class SceneSetup extends Phaser.Scene {
         }
     }
 
+    nextHardPoint() {
+        this.active_hard_point_id += 1;
+        if(this.active_hard_point_id >= this.active_ship.hull.hard_points.length) {
+            this.active_hard_point_id = 0;
+        }
+        this.showActiveHardPoint();
+    }
+
+    previousHardPoint() {
+        this.active_hard_point_id -= 1;
+        if(this.active_hard_point_id < 0) {
+            this.active_hard_point_id = this.active_ship.hull.hard_points.length - 1;
+        }
+        this.showActiveHardPoint();
+    }
+
     loadShipCards() {
         if(this.storeState === "BUYING_TURRET") {
             this.storePage = 1;
+            this.hard_point_name.text = "";
+            this.hard_point_fof.text = "";
+            this.hard_point_size.text = "";
+            this.hard_point_turret_name.text = "";
         }
         this.clearStore();
         this.storeState = "BUYING_HULL";
-        this.startGameButton.visible = true
+        this.startGameButton.visible = true;
+        this.nextHardPointButton.visible = false;
+        this.previousHardPointButton.visible = false;
         let hullStats = new HullStats();
         console.log(hullStats.hulls);
         let card_count = 1;
@@ -208,6 +258,8 @@ class SceneSetup extends Phaser.Scene {
         this.clearStore();
         this.storeState = "BUYING_TURRET";
         this.startGameButton.visible = false;
+        this.nextHardPointButton.visible = true;
+        this.previousHardPointButton.visible = true;
         let turretStats = new TurretStats();
         let card_count = 1;
         let display_order = 1;
@@ -254,7 +306,11 @@ class SceneSetup extends Phaser.Scene {
                 let turretStats = new TurretStats();
                 let turret = turretStats.getBaseTurretStats(this.selectedCard.item_name);
                 console.log(turret);
-                this.displayCardName.text = turret.display_name;
+                let turret_size = "Standard";
+                if(turret.size === 2) {
+                    turret_size = "Large";
+                }
+                this.displayCardName.text = turret.display_name + " - " + turret_size;
                 this.displayCardCost.text = "Cost: " + turret.base_value + " Cr";
             }
         }
@@ -266,7 +322,7 @@ class SceneSetup extends Phaser.Scene {
             let new_ship = new Ship({ 
                 scene: this, 
                 x: this.tile_size * 2 + next_ship_id * this.tile_size, 
-                y: 800,
+                y: 680,
                 hull_name: this.selectedCard.item_name,
                 team: this.team, 
                 facing: (this.team * 4) % 8, 
@@ -283,6 +339,7 @@ class SceneSetup extends Phaser.Scene {
                 this.gameState.last_ship_id = next_ship_id;
                 this.storePage = 1;
                 this.loadTurretCards();
+                this.showActiveHardPoint()
             } else {
                 new_ship.destroy();
                 console.log("Not enough credits");
@@ -297,19 +354,47 @@ class SceneSetup extends Phaser.Scene {
             });
 
             if(this.gameState["team_" + this.team + "_credits"] >= new_turret.values.base_value) {
-
-                this.active_ship.hull.hard_points.forEach((hard_point) => {
-                    if(!hard_point.turret && new_turret) {
-                        this.gameState["team_" + this.team + "_credits"] -= new_turret.values.base_value;
-                        hard_point.turret = new_turret;
-                        console.log("Adding turret " + new_turret.values.name + " to hard point " + hard_point.id);
-                        new_turret = null;
-                    }
-                });
+                if(!this.active_hard_point_id) {
+                    this.active_hard_point_id = 0;
+                }
+                if(!this.active_ship.hull.hard_points[this.active_hard_point_id].turret && new_turret && 
+                    new_turret.values.size === this.active_ship.hull.hard_points[this.active_hard_point_id].size) {
+                    this.gameState["team_" + this.team + "_credits"] -= new_turret.values.base_value;
+                    this.active_ship.hull.hard_points[this.active_hard_point_id].turret = new_turret;
+                    new_turret = null;
+                    this.showActiveHardPoint();
+                }
+                
             }
         }
 
         this.creditsRemaining.text = "Credits Remaining: " + this.gameState["team_" + this.team + "_credits"];
+    }
+
+    showActiveHardPoint() {
+        if(this.active_ship) {
+            if(!this.active_hard_point_id) {
+                this.active_hard_point_id = 0;
+            }
+
+            let fof_names = ["Front", "Front Right", "Right", "Rear Right", "Rear", "Rear Left", "Left", "Front Left"];
+            let hard_point = this.active_ship.hull.hard_points[this.active_hard_point_id];
+            this.hard_point_name.text = hard_point.name;
+            let fof_text = "";
+            hard_point.fields_of_fire.forEach((fof) => {
+                fof_text = fof_text + fof_names[fof] + ", ";
+            });
+            this.hard_point_fof.text = fof_text;
+            if(hard_point.size === 1) {
+                this.hard_point_size.text = "Standard";
+            } else if(hard_point.size === 2) {
+                this.hard_point_size.text = "Large";
+            }
+
+            if(hard_point.turret) {
+                this.hard_point_turret_name.text = hard_point.turret.values.display_name;
+            }
+        }
     }
 
     loadGameState() {

@@ -283,7 +283,7 @@ class SceneMain extends Phaser.Scene {
             this.activeShipCoreStress.text = "Core Stress: " + ship.core_stress + "/" + ship.hull.max_core_stress;
             this.active_ship_image.setTexture(ship.hull_name);
             if(ship.core_overload === 1) {
-                //this.core_overload_reset_button.visible = true;
+                this.reset_overload_button.visible = true;
             }
         } else {
             this.activeShipName.text = "";
@@ -292,7 +292,7 @@ class SceneMain extends Phaser.Scene {
             this.activeShipShields.text = "";
             this.activeShipCoreStress.text = "";
             this.active_ship_image.setTexture("no_ship_selected");
-            //this.core_overload_reset_button.visible = false;
+            this.reset_overload_button.visible = false;
         }
 
     }
@@ -331,7 +331,6 @@ class SceneMain extends Phaser.Scene {
     }
 
     drawMovement(ship) {
-        // TODO modify for only forward movement after adding turn action button?
         this.movementSquares = [];
         if(ship.has_moved === 0) {
             for( var i = 0; i <= ship.speed; i++) {
@@ -796,7 +795,7 @@ class SceneMain extends Phaser.Scene {
         if(this.active_ship) {
             if(this.active_ship.core_overload === 1) {
                 this.active_ship.coreOverloadReset();
-                //this.core_overload_reset_button.visible = false;
+                this.reset_overload_button.visible = false;
                 this.action_taken = 1;
             }
         }
