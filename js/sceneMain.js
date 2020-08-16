@@ -24,7 +24,7 @@ class SceneMain extends Phaser.Scene {
         this.load.image("charge_shield_right_button", "images/charge_shield_right_button.svg");
         this.load.image("charge_shield_left_button", "images/charge_shield_left_button.svg");
         this.load.image("charge_shield_rear_button", "images/charge_shield_rear_button.svg");
-        this.load.image("reset_overload_button", "images/movement_square.svg");
+        this.load.image("reset_overload_button", "images/core_reset_button.svg");
         this.load.image("no_ship_selected", "images/movement_square.svg");
     }
 
