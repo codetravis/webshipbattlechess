@@ -24,7 +24,7 @@ class SceneMain extends Phaser.Scene {
         this.load.image("charge_shield_right_button", "images/charge_shield_right_button.svg");
         this.load.image("charge_shield_left_button", "images/charge_shield_left_button.svg");
         this.load.image("charge_shield_rear_button", "images/charge_shield_rear_button.svg");
-        this.load.image("reset_core_button", "images/movement_square.svg");
+        this.load.image("reset_overload_button", "images/movement_square.svg");
         this.load.image("no_ship_selected", "images/movement_square.svg");
     }
 
@@ -80,7 +80,7 @@ class SceneMain extends Phaser.Scene {
         this.emitter.on("CHARGE_SHIELD_RIGHT", this.chargeActiveShipShield.bind(this));
         this.emitter.on("CHARGE_SHIELD_LEFT", this.chargeActiveShipShield.bind(this));
         this.emitter.on("CHARGE_SHIELD_REAR", this.chargeActiveShipShield.bind(this));
-        this.emitter.on("RESET_CORE_UPLOAD", this.resetActiveShipCore.bind(this));
+        this.emitter.on("RESET_OVERLOAD", this.resetActiveShipCore.bind(this));
 
         this.loadInitialGameState();
         this.endTurn();
@@ -143,6 +143,17 @@ class SceneMain extends Phaser.Scene {
             display_height: 96,
         });
         buttons.push(this.attack_action_button);
+
+        this.reset_overload_button = new UIButton({
+            scene: this,
+            x: 350,
+            y: 680,
+            action_name: "RESET_OVERLOAD",
+            key: "reset_overload_button",
+            display_width: 96,
+            display_height: 96,
+        });
+        buttons.push(this.reset_overload_button);
 
         this.charge_shield_front_button = new UIButton({
             scene: this,
