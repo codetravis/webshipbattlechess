@@ -26,6 +26,7 @@ class SceneMain extends Phaser.Scene {
         this.load.image("charge_shield_rear_button", "images/charge_shield_rear_button.svg");
         this.load.image("reset_overload_button", "images/core_reset_button.svg");
         this.load.image("no_ship_selected", "images/movement_square.svg");
+
     }
 
     create() {
@@ -154,6 +155,7 @@ class SceneMain extends Phaser.Scene {
             display_height: 96,
         });
         buttons.push(this.reset_overload_button);
+        this.reset_overload_button.visible = false;
 
         this.charge_shield_front_button = new UIButton({
             scene: this,
@@ -282,7 +284,7 @@ class SceneMain extends Phaser.Scene {
                 ship.hull.right_shield + " Rear - " + ship.hull.rear_shield + " Left - " + ship.hull.left_shield;
             this.activeShipCoreStress.text = "Core Stress: " + ship.core_stress + "/" + ship.hull.max_core_stress;
             this.active_ship_image.setTexture(ship.hull_name);
-            if(ship.core_overload === 1) {
+            if(ship.core_overload === 1 && ship.turn_finished === 0) {
                 this.reset_overload_button.visible = true;
             }
         } else {
@@ -668,7 +670,7 @@ class SceneMain extends Phaser.Scene {
 
     turretsInRange(attacker, target) {
         let turrets = [];
-        let square_size = 32;
+        let square_size = this.tile_size;
         attacker.hull.hard_points.forEach((hard_point) => {
             if(hard_point.turret) {
                 //if(Math.abs(target.x - attacker.x) <= hard_point.turret.values.range * square_size && 
@@ -776,7 +778,7 @@ class SceneMain extends Phaser.Scene {
     }
 
     chargeActiveShipShield(shieldButton) {
-        if(this.active_ship) {
+        if(this.active_ship && this.active_ship.turn_finished === 0) {
             console.log("Attempting to charge shield for ship: " + this.active_ship.ship_id);
             if(shieldButton.action_name.includes("FRONT")) {
                 this.active_ship.chargeShields("front");

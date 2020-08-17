@@ -160,7 +160,7 @@ class SceneSetup extends Phaser.Scene {
     setInitialShipPostions() {
         for(var i = 1; i <= this.max_teams; i++) {
             Object.keys(this.gameState["team_" + i + "_fleet"]).forEach((ship_id) => {
-                this.gameState["team_" + i + "_fleet"][ship_id].y = this.tile_size + (i - 1) * this.map_height;
+                this.gameState["team_" + i + "_fleet"][ship_id].y = this.tile_size + (i - 1) * 96; //* this.map_height;
             });
         }
     }
@@ -393,6 +393,8 @@ class SceneSetup extends Phaser.Scene {
 
             if(hard_point.turret) {
                 this.hard_point_turret_name.text = hard_point.turret.values.display_name;
+            } else {
+                this.hard_point_turret_name.text = "";
             }
         }
     }

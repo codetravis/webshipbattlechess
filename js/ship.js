@@ -70,9 +70,11 @@ class Ship extends Phaser.GameObjects.Sprite {
     }
 
     coreOverloadReset() {
-        this.core_stress = Math.max(0, this.hull.max_core_stress - this.hull.core_cooling * 3);
-        this.core_overload = 0;
-        this.turn_finished = 1;
+        if(this.turn_finished === 0) {
+            this.core_stress = Math.max(0, this.hull.max_core_stress - this.hull.core_cooling * 3);
+            this.core_overload = 0;
+            this.turn_finished = 1;
+        }
     }
 
     prepareForAction() {
@@ -222,6 +224,8 @@ class Ship extends Phaser.GameObjects.Sprite {
             has_moved: this.has_moved,
             has_faced: this.has_faced,
             has_attacked: this.has_attacked,
+            turn_finished: this.turn_finished,
+            core_overload: this.core_overload,
             shield_generation: this.shield_generation,
             core_stress: this.core_stress,
             initiative: this.initiative,
@@ -236,7 +240,9 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.has_faced = saveObject.has_faced;
         this.has_attacked = saveObject.has_attacked;
         this.core_stress = saveObject.core_stress;
+        this.core_overload = saveObject.core_overload;
         this.shield_generation = saveObject.shield_generation;
+        this.turn_finished = saveObject.turn_finished;
         this.initiative = saveObject.initiative;
         this.hull = saveObject.hull;
         this.hull.hard_points.forEach((hard_point) => {
