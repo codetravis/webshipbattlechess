@@ -45,7 +45,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -53,6 +53,20 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
+    <rect
+       style="fill:#ff0004;fill-opacity:1;stroke:#ff613a;stroke-width:1.64594412;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
+       id="rect819"
+       width="21.708841"
+       height="15.119047"
+       x="154.42804"
+       y="180.58333" />
+    <rect
+       style="fill:#ff0004;fill-opacity:1;stroke:#ff613a;stroke-width:1.64594412;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
+       id="rect819-15"
+       width="21.708841"
+       height="15.119047"
+       x="35.258682"
+       y="180.58333" />
     <path
        style="fill:#ff0004;fill-opacity:1;stroke:none;stroke-width:8.0709486;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
        id="path815"
@@ -72,13 +86,6 @@
        height="36.285713"
        x="24.94643"
        y="150.34523" />
-    <rect
-       style="fill:#ff0004;fill-opacity:1;stroke:#ff613a;stroke-width:1.64594412;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
-       id="rect819"
-       width="21.708841"
-       height="15.119047"
-       x="152.91614"
-       y="185.875" />
     <ellipse
        style="fill:#898989;fill-opacity:1;stroke:none;stroke-width:2.77987742;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
        id="path821"
@@ -93,13 +100,6 @@
        height="15.939475"
        x="84.63443"
        y="186.22073" />
-    <rect
-       style="fill:#ff0004;fill-opacity:1;stroke:#ff613a;stroke-width:1.64594412;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
-       id="rect819-15"
-       width="21.708841"
-       height="15.119047"
-       x="36.014633"
-       y="185.11905" />
     <ellipse
        style="fill:#898989;fill-opacity:1;stroke:none;stroke-width:2.77987742;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
        id="path821-2"
@@ -110,8 +110,8 @@
     <ellipse
        style="fill:#898989;fill-opacity:1;stroke:none;stroke-width:2.77987742;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
        id="path821-3"
-       cx="71.059525"
-       cy="147.32143"
+       cx="72.571426"
+       cy="146.56548"
        rx="6.6681566"
        ry="6.2901812" />
     <ellipse

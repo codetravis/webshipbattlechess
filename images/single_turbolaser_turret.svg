@@ -7,7 +7,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="missile_turret.svg"
+   sodipodi:docname="single_turbolaser_turret.svg"
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    id="svg8"
    version="1.1"
@@ -34,7 +34,8 @@
      borderopacity="1.0"
      bordercolor="#666666"
      pagecolor="#ffffff"
-     id="base" />
+     id="base"
+     inkscape:snap-global="false" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -43,7 +44,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -51,26 +52,36 @@
      id="layer1"
      inkscape:groupmode="layer"
      inkscape:label="Layer 1">
-    <ellipse
-       ry="41.199402"
-       rx="37.797619"
-       cy="161.39583"
-       cx="108.1012"
-       id="path833"
-       style="fill:#0000ff;stroke:#ff0000;stroke-width:5.29199974;stroke-dasharray:none;stroke-miterlimit:4;stroke-dashoffset:0;fill-opacity:1" />
     <rect
-       style="fill:#0000ff;fill-opacity:1;stroke:#ff0000;stroke-width:5.29200983;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0"
-       id="rect835-2"
-       width="22.678572"
-       height="99.029762"
-       x="126.24406"
-       y="109.23512" />
+       style="fill:#bf9f00;fill-opacity:1;stroke:#cbcc53;stroke-width:3.07980061;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
+       id="rect1453-7-7"
+       width="16.217012"
+       height="90.300354"
+       x="96.968872"
+       y="46.986725" />
     <rect
        y="18.898809"
        x="8.3154764"
        height="251.73215"
        width="194.27975"
        id="rect852"
-       style="fill:none;fill-opacity:1;stroke:#ff0000;stroke-width:5.29201;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0" />
+       style="fill:none;fill-opacity:1;stroke:#cbcc53;stroke-width:5.29201;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       sodipodi:type="star"
+       style="fill:#bf9f00;fill-opacity:1;stroke:#cbcc53;stroke-width:3.26499987;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
+       id="path1576"
+       sodipodi:sides="8"
+       sodipodi:cx="104.32143"
+       sodipodi:cy="186.63095"
+       sodipodi:r1="65.419365"
+       sodipodi:r2="60.439617"
+       sodipodi:arg1="-0.39123558"
+       sodipodi:arg2="0.0014635026"
+       inkscape:flatsided="true"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 164.79761,161.68452 -0.0733,50.06976 -35.45649,35.35286 -50.069757,-0.0733 -35.352853,-35.45648 0.07328,-50.06976 35.456483,-35.35286 50.06976,0.0733 z"
+       inkscape:transform-center-x="-3.0952381e-06"
+       inkscape:transform-center-y="-1.3798275e-06" />
   </g>
 </svg>

@@ -7,7 +7,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="missile_turret.svg"
+   sodipodi:docname="dual_laser_turret.svg"
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    id="svg8"
    version="1.1"
@@ -43,7 +43,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -51,26 +51,33 @@
      id="layer1"
      inkscape:groupmode="layer"
      inkscape:label="Layer 1">
-    <ellipse
-       ry="41.199402"
-       rx="37.797619"
-       cy="161.39583"
-       cx="108.1012"
-       id="path833"
-       style="fill:#0000ff;stroke:#ff0000;stroke-width:5.29199974;stroke-dasharray:none;stroke-miterlimit:4;stroke-dashoffset:0;fill-opacity:1" />
     <rect
-       style="fill:#0000ff;fill-opacity:1;stroke:#ff0000;stroke-width:5.29200983;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0"
-       id="rect835-2"
-       width="22.678572"
-       height="99.029762"
-       x="126.24406"
-       y="109.23512" />
+       style="fill:#89d689;fill-opacity:1;stroke:#048f89;stroke-width:2.66586113;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
+       id="rect1453-3"
+       width="12.095238"
+       height="90.714287"
+       x="125.48809"
+       y="62.654762" />
     <rect
        y="18.898809"
        x="8.3154764"
        height="251.73215"
        width="194.27975"
        id="rect852"
-       style="fill:none;fill-opacity:1;stroke:#ff0000;stroke-width:5.29201;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0" />
+       style="fill:none;fill-opacity:1;stroke:#048f89;stroke-width:5.29201;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <rect
+       style="fill:#89d689;fill-opacity:1;stroke:#048f89;stroke-width:2.66586113;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
+       id="rect1453"
+       width="12.095238"
+       height="90.714287"
+       x="70.303558"
+       y="63.410713" />
+    <rect
+       style="fill:#89d689;fill-opacity:1;stroke:#048f89;stroke-width:3.03526831;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:114.51968384;stroke-opacity:1"
+       id="rect1451"
+       width="96.761909"
+       height="89.958336"
+       x="56.696426"
+       y="143.54167" />
   </g>
 </svg>
