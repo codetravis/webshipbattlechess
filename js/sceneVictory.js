@@ -38,8 +38,8 @@ class SceneVictory extends Phaser.Scene {
         this.gameState = {
             last_ship_id: 0,
             teams: 2,
-            team_1_credits: 100000,
-            team_2_credits: 100000,
+            team_1_credits: 200000,
+            team_2_credits: 200000,
             team_1_fleet: {},
             team_2_fleet: {}
         };

@@ -9,14 +9,32 @@ class SceneSetup extends Phaser.Scene {
         this.load.image("drudge_freighter", "images/drudge_freighter.svg");
         this.load.image("light_scout", "images/light_scout.svg");
         this.load.image("wedge_destroyer", "images/wedge_destroyer.svg");
+        this.load.image("shield_cruiser", "images/shield_cruiser.svg");
         this.load.image("move_square", "images/movement_square.svg");
         this.load.image("attack_square", "images/attack_square.svg");
         this.load.image("end_button", "images/movement_square.svg");
-        this.load.image("single_laser_turret", "images/single_laser.png");
-        this.load.image("single_blaster_turret", "images/single_laser.png");
-        this.load.image("single_turbolaser_turret", "images/single_laser.png");
-        this.load.image("single_concussionmissle_turret", "images/missile_turret.svg");
-        this.load.image("single_105mm_turret", "images/cannon_turret.svg");
+        this.load.image("single_laser_turret", "images/single_laser_turret.svg");
+        this.load.image("single_ion_turret", "images/single_ion_turret.svg");
+        this.load.image("single_blaster_turret", "images/single_blaster_turret.svg");
+        this.load.image("single_turbolaser_turret", "images/single_turbolaser_turret.svg");
+        this.load.image("single_concussionmissile_turret", "images/single_missile_turret.svg");
+        this.load.image("single_105mm_turret", "images/single_cannon_turret.svg");
+        this.load.image("dual_laser_turret", "images/dual_laser_turret.svg");
+        this.load.image("dual_ion_turret", "images/dual_ion_turret.svg");
+        this.load.image("dual_blaster_turret", "images/dual_blaster_turret.svg");
+        this.load.image("dual_105mm_turret", "images/dual_cannon_turret.svg");
+        this.load.image("dual_turbolaser_turret", "images/dual_turbolaser_turret.svg");
+        this.load.image("dual_missile_turret", "images/dual_missile_turret.svg");
+        this.load.image("triple_laser_turret", "images/triple_laser_turret.svg");
+        this.load.image("triple_ion_turret", "images/triple_ion_turret.svg");
+        this.load.image("triple_blaster_turret", "images/triple_blaster_turret.svg");
+        this.load.image("triple_105mm_turret", "images/triple_cannon_turret.svg");
+        this.load.image("triple_turbolaser_turret", "images/triple_turbolaser_turret.svg");
+        this.load.image("quad_laser_turret", "images/quad_laser_turret.svg");
+        this.load.image("quad_ion_turret", "images/quad_ion_turret.svg");
+        this.load.image("quad_blaster_turret", "images/quad_blaster_turret.svg");
+        this.load.image("quad_105mm_turret", "images/quad_cannon_turret.svg");
+        this.load.image("quad_turbolaser_turret", "images/quad_turbolaser_turret.svg");
         this.load.image("buy_button", "images/buy_button.svg");
         this.load.image("done_button", "images/done_button.svg");
         this.load.image("next_arrow", "images/next_arrow.svg");
@@ -407,8 +425,8 @@ class SceneSetup extends Phaser.Scene {
             this.gameState = {
                 last_ship_id: 0,
                 teams: 2,
-                team_1_credits: 100000,
-                team_2_credits: 100000,
+                team_1_credits: 200000,
+                team_2_credits: 200000,
                 team_1_fleet: {},
                 team_2_fleet: {}
             };
