@@ -204,7 +204,7 @@ class TurretStats {
             },
             "triple_laser_turret": {
                 name: "triple_laser_turret",
-                display_name: "Dual Laser Turret",
+                display_name: "Triple Laser Turret",
                 description: "Medium range and good damage to power ratio, the laser cannon is a core part of a well rounded ships weapons compliment",
                 damage_type: "energy",
                 size: 1,
@@ -220,7 +220,7 @@ class TurretStats {
             }, 
             "triple_ion_turret": {
                 name: "triple_ion_turret",
-                display_name: "Dual Ion Turret",
+                display_name: "Triple Ion Turret",
                 description: "Primarily used to overload target ships core for disabling and capture",
                 damage_type: "ion",
                 size: 1,
@@ -236,7 +236,7 @@ class TurretStats {
             },
             "triple_blaster_turret": {
                 name: "triple_blaster_turret",
-                display_name: "Dual Blaster Turret",
+                display_name: "Triple Blaster Turret",
                 description: "Short range but quick firing, the blaster cannon is devastating up close but has a high power cost",
                 damage_type: "energy",
                 size: 1,
@@ -252,7 +252,7 @@ class TurretStats {
             },
             "triple_turbolaser_turret": {
                 name: "triple_turbolaser_turret",
-                display_name: "Dual Turbolaser Turret",
+                display_name: "Triple Turbolaser Turret",
                 description: "Higher power and higher range but also at extreme cost, turbo lasers are the choice for dealing with tougher targets",
                 damage_type: "energy",
                 size: 2,
@@ -268,7 +268,7 @@ class TurretStats {
             },
             "triple_105mm_turret": {
                 name: "triple_105mm_turret",
-                display_name: "Dual 105mm Cannon Turret",
+                display_name: "Triple 105mm Cannon Turret",
                 description: "Tried and true method of delivering pain, cannons fire armor piercing kinetic rounds at great speeds. Low accuracy",
                 damage_type: "kinetic",
                 size: 1,
@@ -284,7 +284,7 @@ class TurretStats {
             },
             "quad_laser_turret": {
                 name: "quad_laser_turret",
-                display_name: "Dual Laser Turret",
+                display_name: "Quad Laser Turret",
                 description: "Medium range and good damage to power ratio, the laser cannon is a core part of a well rounded ships weapons compliment",
                 damage_type: "energy",
                 size: 1,
@@ -300,7 +300,7 @@ class TurretStats {
             }, 
             "quad_ion_turret": {
                 name: "quad_ion_turret",
-                display_name: "Dual Ion Turret",
+                display_name: "Quad Ion Turret",
                 description: "Primarily used to overload target ships core for disabling and capture",
                 damage_type: "ion",
                 size: 1,
@@ -316,7 +316,7 @@ class TurretStats {
             },
             "quad_blaster_turret": {
                 name: "quad_blaster_turret",
-                display_name: "Dual Blaster Turret",
+                display_name: "Quad Blaster Turret",
                 description: "Short range but quick firing, the blaster cannon is devastating up close but has a high power cost",
                 damage_type: "energy",
                 size: 1,
@@ -332,7 +332,7 @@ class TurretStats {
             },
             "quad_turbolaser_turret": {
                 name: "quad_turbolaser_turret",
-                display_name: "Dual Turbolaser Turret",
+                display_name: "Quad Turbolaser Turret",
                 description: "Higher power and higher range but also at extreme cost, turbo lasers are the choice for dealing with tougher targets",
                 damage_type: "energy",
                 size: 2,
@@ -348,7 +348,7 @@ class TurretStats {
             },
             "quad_105mm_turret": {
                 name: "quad_105mm_turret",
-                display_name: "Dual 105mm Cannon Turret",
+                display_name: "Quad 105mm Cannon Turret",
                 description: "Tried and true method of delivering pain, cannons fire armor piercing kinetic rounds at great speeds. Low accuracy",
                 damage_type: "kinetic",
                 size: 1,

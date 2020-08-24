@@ -82,6 +82,7 @@ class SceneMain extends Phaser.Scene {
         this.attackSquares = [];
         this.facingSquares = [];
         this.attackLines = [];
+        this.visibleTurrets = [];
 
         this.createUIButtons();
         this.createUIInfoDisplay();     
@@ -100,6 +101,7 @@ class SceneMain extends Phaser.Scene {
         this.emitter.on("CHARGE_SHIELD_LEFT", this.chargeActiveShipShield.bind(this));
         this.emitter.on("CHARGE_SHIELD_REAR", this.chargeActiveShipShield.bind(this));
         this.emitter.on("RESET_OVERLOAD", this.resetActiveShipCore.bind(this));
+        this.emitter.on("TOGGLE_TURRET_ACTIVE", this.toggleTurretActive.bind(this));
 
         this.loadInitialGameState();
         this.endTurn();
@@ -305,6 +307,7 @@ class SceneMain extends Phaser.Scene {
             if(ship.core_overload === 1 && ship.turn_finished === 0) {
                 this.reset_overload_button.visible = true;
             }
+            this.setTurretActivationDisplay(ship);
         } else {
             this.activeShipName.text = "";
             this.activeShipHealth.text = "";
@@ -313,8 +316,55 @@ class SceneMain extends Phaser.Scene {
             this.activeShipCoreStress.text = "";
             this.active_ship_image.setTexture("no_ship_selected");
             this.reset_overload_button.visible = false;
+            this.clearVisibleTurrets();
         }
 
+    }
+
+    setTurretActivationDisplay(ship) {
+        this.visibleTurrets = [];
+        ship.hull.hard_points.forEach((hard_point) => {
+            if(hard_point.turret) {
+                let turretActivate = new UIButton({
+                    scene: this,
+                    x: 100 + (50 * hard_point.id),
+                    y: 855,
+                    action_name: "TOGGLE_TURRET_ACTIVE",
+                    key: hard_point.turret.values.name,
+                    display_width: 48,
+                    display_height: 48,
+                });
+                if(!hard_point.active) {
+                    turretActivate.setAlpha(0.7);
+                }
+                this.cameras.main.ignore(turretActivate);
+                this.visibleTurrets.push(turretActivate);
+            }
+        });
+    }
+
+    clearVisibleTurrets() {
+        this.visibleTurrets.forEach((turret) => {
+            turret.delete();
+        });
+
+        this.visibleTurrets = [];
+    }
+
+    toggleTurretActive(turret_selector) {
+        let selected_id = Math.floor((turret_selector.x - 100) / 50);
+        this.active_ship.hull.hard_points.forEach((hard_point) => {
+            if(hard_point.id === selected_id) {
+                if(hard_point.active) {
+                    hard_point.active = false;
+                    turret_selector.setAlpha(0.7); 
+                } else {
+                    hard_point.active = true;
+                    turret_selector.setAlpha(1.0);
+                }
+                return;
+            }
+        })
     }
 
     showMoveActions() {
@@ -391,7 +441,7 @@ class SceneMain extends Phaser.Scene {
         this.attackSquares = [];
 
         ship.hull.hard_points.forEach((hard_point) => {
-            if(hard_point.turret) {
+            if(hard_point.turret && hard_point.active === 1) {
                 for(var i = 0; i <= hard_point.turret.values.range; i++) {
                     let plus_x = ship.x + (i * this.tile_size);
                     let minus_x = ship.x - (i * this.tile_size);
