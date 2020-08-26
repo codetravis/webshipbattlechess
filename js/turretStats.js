@@ -90,8 +90,8 @@ class TurretStats {
                 max_ammo: 50,
                 ammo: 50,
             },
-            "single_concussionmissle_turret": {
-                name: "single_concussionmissle_turret",
+            "single_concussionmissile_turret": {
+                name: "single_concussionmissile_turret",
                 display_name: "Single Concussion Missile Turret",
                 description: "Guided missiles with perfect accuarcy. Can be destroyed by point defense systems and explode against shields without damaging the ship beyond. Can be dodged by fast moving fighters. Low ammo.",
                 damage_type: "explosive",
@@ -186,8 +186,8 @@ class TurretStats {
                 max_ammo: 80,
                 ammo: 80,
             },
-            "dual_concussionmissle_turret": {
-                name: "dual_concussionmissle_turret",
+            "dual_concussionmissile_turret": {
+                name: "dual_concussionmissile_turret",
                 display_name: "Dual Concussion Missile Turret",
                 description: "Guided missiles with perfect accuarcy. Can be destroyed by point defense systems and explode against shields without damaging the ship beyond. Can be dodged by fast moving fighters. Low ammo.",
                 damage_type: "explosive",

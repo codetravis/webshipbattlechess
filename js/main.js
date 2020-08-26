@@ -7,7 +7,7 @@ window.onload = function() {
         width: 950,
         height: 1000,
         parent: 'game-div',
-        scene: [SceneSetup, SceneMain, SceneVictory]
+        scene: [SceneStartMenu, SceneSetup, SceneMain, SceneVictory]
     };
 
     game = new Phaser.Game(config);

@@ -24,7 +24,7 @@ class SceneSetup extends Phaser.Scene {
         this.load.image("dual_blaster_turret", "images/dual_blaster_turret.svg");
         this.load.image("dual_105mm_turret", "images/dual_cannon_turret.svg");
         this.load.image("dual_turbolaser_turret", "images/dual_turbolaser_turret.svg");
-        this.load.image("dual_missile_turret", "images/dual_missile_turret.svg");
+        this.load.image("dual_concussionmissile_turret", "images/dual_missile_turret.svg");
         this.load.image("triple_laser_turret", "images/triple_laser_turret.svg");
         this.load.image("triple_ion_turret", "images/triple_ion_turret.svg");
         this.load.image("triple_blaster_turret", "images/triple_blaster_turret.svg");
@@ -256,7 +256,6 @@ class SceneSetup extends Phaser.Scene {
 
             if(card_count > this.storePage * this.storePageSize || 
                card_count <= this.storePage * this.storePageSize - this.storePageSize) {
-                console.log("Card " + card_count + " is not on page " + this.storePage);
                 card_count++;
                 return;
             }
@@ -292,7 +291,6 @@ class SceneSetup extends Phaser.Scene {
 
             if(card_count > this.storePage * this.storePageSize || 
                 card_count <= this.storePage * this.storePageSize - this.storePageSize) {
-                console.log("Card " + card_count + " is not on page " + this.storePage);
                  card_count++;
                  return;
              }

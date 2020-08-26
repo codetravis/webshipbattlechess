@@ -345,7 +345,7 @@ class SceneMain extends Phaser.Scene {
 
     clearVisibleTurrets() {
         this.visibleTurrets.forEach((turret) => {
-            turret.delete();
+            turret.destroy();
         });
 
         this.visibleTurrets = [];
@@ -365,6 +365,9 @@ class SceneMain extends Phaser.Scene {
                 return;
             }
         })
+        if(this.attackSquares.length > 0) {
+            this.drawAttacks(this.active_ship);
+        }
     }
 
     showMoveActions() {
@@ -441,7 +444,7 @@ class SceneMain extends Phaser.Scene {
         this.attackSquares = [];
 
         ship.hull.hard_points.forEach((hard_point) => {
-            if(hard_point.turret && hard_point.active === 1) {
+            if(hard_point.turret && hard_point.active) {
                 for(var i = 0; i <= hard_point.turret.values.range; i++) {
                     let plus_x = ship.x + (i * this.tile_size);
                     let minus_x = ship.x - (i * this.tile_size);
@@ -740,7 +743,7 @@ class SceneMain extends Phaser.Scene {
         let turrets = [];
         let square_size = this.tile_size;
         attacker.hull.hard_points.forEach((hard_point) => {
-            if(hard_point.turret) {
+            if(hard_point.turret && hard_point.active) {
                 //if(Math.abs(target.x - attacker.x) <= hard_point.turret.values.range * square_size && 
                  //   Math.abs(target.y - attacker.y) <= hard_point.turret.values.range * square_size) {
                 if(this.distanceToTarget(attacker, target) <= hard_point.turret.values.range * square_size) {
