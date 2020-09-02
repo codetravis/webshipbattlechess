@@ -31,7 +31,7 @@ class SceneVictory extends Phaser.Scene {
 
     goToSetup() {
         this.refreshGameState();
-        this.scene.start('SceneSetup');
+        this.scene.start('SceneFleetStore');
     }
 
     refreshGameState() {

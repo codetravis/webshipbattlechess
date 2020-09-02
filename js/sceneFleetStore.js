@@ -1,6 +1,6 @@
 class SceneSetup extends Phaser.Scene {
     constructor() {
-        super({ key: 'SceneSetup' });
+        super({ key: 'SceneFleetStore' });
     }
 
     preload() {
