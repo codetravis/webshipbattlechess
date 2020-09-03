@@ -45,19 +45,35 @@ class SceneSpacePreBattle extends Phaser.Scene {
     create() {
         // read in ships
         this.allShips = [];
+        this.placementSquares = [];
         this.gameState = {};
         this.active_ship = null;
         this.active_team = 1;
         this.map_width = 1280;
         this.map_height = 1280;
         this.tile_size = 32;
-        
+
+        this.cameras.main.setViewport(0, 0, 608, 500);
+        this.cameras.main.setBounds(-50, -50, this.map_width + 50, this.map_height + 50);
+
+        this.mainCameraControls = new Phaser.Cameras.Controls.FixedKeyControl({
+            camera: this.cameras.main,
+            up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+            left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+            down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+            right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
+            speed: 1.0
+        });
+        this.mainCameraControls.start();
+
         this.loadInitialGameState();
 
         // allow teams to arrange ships from their fleet on the battlefield
         this.emitter = EventDispatcher.getInstance();
         this.emitter.on("SHIP_CLICKED", this.setSelectedShip.bind(this));
-        
+        this.emitter.on("PLACEMENT_SQUARE_CLICKED", this.placeSelectedShip.bind(this));
+        this.emitter.on("REMOVE_SHIP_CLICKED", this.removeSelectedShip.bind(this));
+        this.emitter.on("FINISHED_PLACEMENT", this.finishedPlacing.bind(this));
     }
 
     loadInitialGameState() {
@@ -80,8 +96,6 @@ class SceneSpacePreBattle extends Phaser.Scene {
                     next_ship.restoreFromSaveObject(ship_info);
                     console.log("created new ship " + ship_id);
                     this.allShips.push(next_ship);
-                    this.bottomHUDCamera.ignore(next_ship);
-                    this.bottomHUDCamera.ignore(next_ship.team_marker);
                 });
             }
         }
@@ -101,10 +115,44 @@ class SceneSpacePreBattle extends Phaser.Scene {
     }
 
     //
+    drawPlacementSquares() {
+        this.placementSquares.forEach((square) => {
+            square.destroy();
+        });
+        this.placementSquares = [];
+        let x_begin = 12 * this.tile_size;
+        let x_end = 28 * this.tile_size;
+        let y_begin = (this.active_team == 1) ? this.tile_size * 8 : this.tile_size * 28;
+        let y_end = y_begin + (4 * this.tile_size);
+
+        for(let x = x_begin; x < x_end; x += this.tile_size) {
+            for(let y = y_begin; y < y_end; y += this.tile_size) {
+
+                if(this.validatePlacementSquare(x, y)) {
+                    // create placement square at x, y if no ship is placed there
+                    this.placementSquares.push(new ActionSquare({scene: this, x: x, y: y, key: "move_square", event_name: "PLACEMENT_SQUARE_CLICKED"}));
+                }
+            }
+        }
+    }
+
+    validatePlacementSquare(target_x, target_y) {
+        let valid = true;
+        this.allShips.forEach((ship) => {
+            if(target_x == ship.x && target_y == ship.y && ship.hull.core_health > 0) {
+                valid = false;
+            }
+        });
+
+        return valid;
+    }
+
+    //
     setSelectedShip(ship) {
         if(this.active_team == ship.team) {
              // set the hud to show the selected units info
              this.active_ship = ship;
+             this.drawPlacementSquares();
              //this.setShipInfoDisplay(ship);
          }
     }
@@ -132,8 +180,8 @@ class SceneSpacePreBattle extends Phaser.Scene {
         this.scene.start('SceneMain');
     }
 
-    update() {
-
+    update(time, delta) {
+        this.mainCameraControls.update(delta);
     }
 
 }
