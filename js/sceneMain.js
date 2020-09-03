@@ -262,20 +262,22 @@ class SceneMain extends Phaser.Scene {
             for(var i = 1; i <= this.gameState.teams; i++) {
                 Object.keys(this.gameState["team_" + i + "_fleet"]).forEach((ship_id) => {
                     let ship_info = this.gameState["team_" + i + "_fleet"][ship_id];
-                    let next_ship = new Ship({
-                        scene: this,
-                        x: ship_info.x,
-                        y: ship_info.y,
-                        hull_name: ship_info.hull_name,
-                        team: ship_info.team,
-                        facing: ship_info.facing,
-                        ship_id: ship_id
-                    });
-                    next_ship.restoreFromSaveObject(ship_info);
-                    console.log("created new ship " + ship_id);
-                    this.allShips.push(next_ship);
-                    this.bottomHUDCamera.ignore(next_ship);
-                    this.bottomHUDCamera.ignore(next_ship.team_marker);
+                    if(ship_info.deployed) {
+                        let next_ship = new Ship({
+                            scene: this,
+                            x: ship_info.x,
+                            y: ship_info.y,
+                            hull_name: ship_info.hull_name,
+                            team: ship_info.team,
+                            facing: ship_info.facing,
+                            ship_id: ship_id
+                        });
+                        next_ship.restoreFromSaveObject(ship_info);
+                        console.log("created new ship " + ship_id);
+                        this.allShips.push(next_ship);
+                        this.bottomHUDCamera.ignore(next_ship);
+                        this.bottomHUDCamera.ignore(next_ship.team_marker);
+                    }
                 });
             }
         }
@@ -372,21 +374,21 @@ class SceneMain extends Phaser.Scene {
 
     showMoveActions() {
         this.clearActionSquares();
-        if (this.active_ship && this.active_ship.has_moved === 0) {
+        if (this.active_ship && !this.active_ship.has_moved) {
             this.drawMovement(this.active_ship);
         }
     }
 
     showTurnActions() {
         this.clearActionSquares();
-        if (this.active_ship && this.active_ship.has_faced === 0) {
+        if (this.active_ship && !this.active_ship.has_faced) {
             this.drawFacing(this.active_ship);
         }
     }
 
     showAttackActions() {
         this.clearActionSquares();
-        if (this.active_ship && this.active_ship.has_attacked === 0) {
+        if (this.active_ship && !this.active_ship.has_attacked) {
             this.drawAttacks(this.active_ship);
         }
     }
@@ -405,7 +407,7 @@ class SceneMain extends Phaser.Scene {
 
     drawMovement(ship) {
         this.movementSquares = [];
-        if(ship.has_moved === 0) {
+        if(!ship.has_moved) {
             for( var i = 0; i <= ship.speed; i++) {
                 let plus_x = ship.x + (i * this.tile_size);
                 let minus_x = ship.x - (i * this.tile_size);
@@ -536,7 +538,7 @@ class SceneMain extends Phaser.Scene {
         // TODO: refactor
         this.facingSquares = [];
         let square_size = 32;
-        if(ship.has_faced === 0) {
+        if(!ship.has_faced) {
             if(ship.hull.turning === 1) {
                 if([0, 1, 7].includes(ship.facing)) {
                     this.facingSquares.push(new ActionSquare({scene: this, x: ship.x, y: ship.y - square_size, facing: 0, key: "move_square", event_name: "FACE_CLICKED"}));
@@ -706,7 +708,7 @@ class SceneMain extends Phaser.Scene {
             square.destroy();
         })
         this.attackSquares = [];
-        this.active_ship.has_attacked = 1;
+        this.active_ship.has_attacked = true;
         this.action_taken = 1;
         this.setShipInfoDisplay(this.active_ship);
     }
@@ -833,7 +835,7 @@ class SceneMain extends Phaser.Scene {
         let team_one_ships = 0;
         let team_two_ships = 0;
         this.allShips.forEach((ship) => {
-            if(ship.turn_finished === 0 && 
+            if(!ship.turn_finished && 
                ship.hull.core_health > 0 &&
                ship.initiative + ship.reserved === this.current_iniative) {
                 ships_to_act.push(ship);

@@ -9,6 +9,7 @@ class SceneStartMenu extends Phaser.Scene {
 
     create() {
 
+        this.add.text(250, 150, "Web Ship Battle Chess", {fontFamily: 'Arial'});
         this.begin_hotseat_button = new UIButton({
             scene: this,
             x: 250,
@@ -24,7 +25,7 @@ class SceneStartMenu extends Phaser.Scene {
     }
 
     beginHotseatBattle() {
-        this.scene.start('SceneSetup');
+        this.scene.start('SceneFleetStore');
     }
 
     update() {

@@ -1,4 +1,4 @@
-class SceneSetup extends Phaser.Scene {
+class SceneFleetStore extends Phaser.Scene {
     constructor() {
         super({ key: 'SceneFleetStore' });
     }
@@ -165,7 +165,7 @@ class SceneSetup extends Phaser.Scene {
         } else {
             this.setInitialShipPostions();
             this.saveGameState();
-            this.scene.start('SceneMain');
+            this.scene.start('SceneSpacePreBattle');
         }
     }
 

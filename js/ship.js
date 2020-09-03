@@ -32,17 +32,17 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.speed = this.hull.speed;
         this.facing = config.facing;
         this.angle = 45 * this.facing;
-        this.has_moved = 0;
-        this.has_faced = 0;
-        this.has_attacked = 0;
-        this.turn_finished = 0;
+        this.has_moved = false;
+        this.has_faced = false;
+        this.has_attacked = false;
+        this.turn_finished = false;
         this.core_stress = 0;
         this.initiative = this.hull.base_initiative;
         this.shield_generation = 0;
         this.data_object = 0;
         this.reserved = 0;
         this.core_overload = 0;
-        
+        this.deployed = false;
 
         this.setInteractive();
         this.on('pointerdown', this.clicked, this);
@@ -59,34 +59,34 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.y = y;
         this.team_marker.x = x;
         this.team_marker.y = y;
-        this.has_moved = 1;
+        this.has_moved = true;
     }
 
     faceMe(facing) {
         this.angle = 45 * facing;
         this.facing = facing;
 
-        this.has_faced = 1;
+        this.has_faced = true;
     }
 
     coreOverloadReset() {
-        if(this.turn_finished === 0) {
+        if(!this.turn_finished) {
             this.core_stress = Math.max(0, this.hull.max_core_stress - this.hull.core_cooling * 3);
             this.core_overload = 0;
-            this.turn_finished = 1;
+            this.turn_finished = true;
         }
     }
 
     prepareForAction() {
         if(this.core_overload === 0) {
-            this.has_moved = 0;
-            this.has_faced = 0;
-            this.has_attacked = 0;
+            this.has_moved = false;
+            this.has_faced = false;
+            this.has_attacked = false;
             this.shield_generation = 0;
             this.core_stress = Math.max(0, this.core_stress - this.hull.core_cooling);
             this.reserved = 0;
         }
-        this.turn_finished = 0;
+        this.turn_finished = false;
     }
 
     hideMe() {
@@ -229,6 +229,7 @@ class Ship extends Phaser.GameObjects.Sprite {
             shield_generation: this.shield_generation,
             core_stress: this.core_stress,
             initiative: this.initiative,
+            deployed: this.deployed,
             data_object: 1,
         }
     }
@@ -245,6 +246,7 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.turn_finished = saveObject.turn_finished;
         this.initiative = saveObject.initiative;
         this.hull = saveObject.hull;
+        this.deployed = saveObject.deployed
         this.hull.hard_points.forEach((hard_point) => {
             if(hard_point.turret) {
                 this.addTurret(hard_point.id, hard_point.turret.name);
