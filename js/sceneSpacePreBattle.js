@@ -66,7 +66,19 @@ class SceneSpacePreBattle extends Phaser.Scene {
         });
         this.mainCameraControls.start();
 
+        this.cameras.main.centerOn(20 * this.tile_size, this.tile_size * 8);
+
         this.loadInitialGameState();
+
+        this.end_deployment_button = new UIButton({
+            scene: this,
+            x: 400,
+            y: 480,
+            action_name: "FINISHED_PLACEMENT",
+            key: "done_button",
+            display_width: 96,
+            display_height: 48
+        });
 
         // allow teams to arrange ships from their fleet on the battlefield
         this.emitter = EventDispatcher.getInstance();
@@ -103,18 +115,13 @@ class SceneSpacePreBattle extends Phaser.Scene {
 
     saveGameState() {
         // turn ships and turrets into saveable objects before storing in game state
-        for(var i = 1; i <= this.max_teams; i++) {
-            Object.keys(this.gameState["team_" + i + "_fleet"]).forEach((ship_id) => {
-                if(this.gameState["team_" + i + "_fleet"][ship_id].data_object === 0) {
-                    this.gameState["team_" + i + "_fleet"][ship_id] = this.gameState["team_" + i + "_fleet"][ship_id].saveableObject();
-                }
-            });
-        }
+        this.allShips.forEach((ship) => {
+            this.gameState["team_" + ship.team + "_fleet"][ship.ship_id] = ship.saveableObject();
+        });
         let gameStateString = JSON.stringify(this.gameState);
         localStorage.setItem('game', gameStateString);
     }
 
-    //
     drawPlacementSquares() {
         this.placementSquares.forEach((square) => {
             square.destroy();
@@ -162,6 +169,7 @@ class SceneSpacePreBattle extends Phaser.Scene {
         if(this.active_ship) {
             this.active_ship.moveMe(target.x, target.y);
             this.active_ship.deployed = true;
+            this.drawPlacementSquares();
         }
     }
 
@@ -175,9 +183,25 @@ class SceneSpacePreBattle extends Phaser.Scene {
 
     // end this players ship placement and update game state 
     finishedPlacing() {
-        this.saveGameState();
 
-        this.scene.start('SceneMain');
+        // check that current player has placed at least one ship
+        let deployed_ships = 0;
+        this.allShips.forEach((ship) => {
+            if(ship.team === this.active_team && ship.deployed) {
+                deployed_ships += 1;
+            }
+        });
+
+        if(deployed_ships === 0) {
+            return;
+        }
+
+        if(this.active_team === 2) {
+            this.saveGameState();
+            this.scene.start('SceneMain');
+        } else {
+            this.active_team += 1;
+        }
     }
 
     update(time, delta) {
