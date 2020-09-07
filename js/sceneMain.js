@@ -286,7 +286,7 @@ class SceneMain extends Phaser.Scene {
     setActiveShip(ship) {
         if(this.active_team == ship.team && 
            this.action_taken === 0 &&
-           ship.turn_finished === 0 &&
+           !ship.turn_finished &&
            ship.initiative === this.current_iniative) {
             // set the hud to show the selected units info
             this.clearActionSquares();
@@ -306,7 +306,7 @@ class SceneMain extends Phaser.Scene {
                 ship.hull.right_shield + " Rear - " + ship.hull.rear_shield + " Left - " + ship.hull.left_shield;
             this.activeShipCoreStress.text = "Core Stress: " + ship.core_stress + "/" + ship.hull.max_core_stress;
             this.active_ship_image.setTexture(ship.hull_name);
-            if(ship.core_overload === 1 && ship.turn_finished === 0) {
+            if(ship.core_overload === 1 && !ship.turn_finished) {
                 this.reset_overload_button.visible = true;
             }
             this.setTurretActivationDisplay(ship);
@@ -320,10 +320,12 @@ class SceneMain extends Phaser.Scene {
             this.reset_overload_button.visible = false;
             this.clearVisibleTurrets();
         }
-
     }
 
     setTurretActivationDisplay(ship) {
+        this.visibleTurrets.forEach((turret_display) => {
+            turret_display.destroy();
+        });
         this.visibleTurrets = [];
         ship.hull.hard_points.forEach((hard_point) => {
             if(hard_point.turret) {
@@ -851,7 +853,7 @@ class SceneMain extends Phaser.Scene {
     }
 
     chargeActiveShipShield(shieldButton) {
-        if(this.active_ship && this.active_ship.turn_finished === 0) {
+        if(this.active_ship && !this.active_ship.turn_finished) {
             console.log("Attempting to charge shield for ship: " + this.active_ship.ship_id);
             if(shieldButton.action_name.includes("FRONT")) {
                 this.active_ship.chargeShields("front");
@@ -887,7 +889,7 @@ class SceneMain extends Phaser.Scene {
         }
 
         if(this.active_ship) {
-            this.active_ship.turn_finished = 1;
+            this.active_ship.turn_finished = true;
             this.active_ship = null;
             this.setShipInfoDisplay(null);
         }

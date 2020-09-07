@@ -168,6 +168,7 @@ class SceneSpacePreBattle extends Phaser.Scene {
     placeSelectedShip(target) {
         if(this.active_ship) {
             this.active_ship.moveMe(target.x, target.y);
+            this.active_ship.has_moved = false;
             this.active_ship.deployed = true;
             this.drawPlacementSquares();
         }
@@ -179,6 +180,17 @@ class SceneSpacePreBattle extends Phaser.Scene {
             this.active_ship.moveMe(0, 0);
             this.active_ship.deployed = false;
         }
+    }
+
+    showActiveTeamShips(team) {
+        this.allShips.forEach((ship) => {
+            if(ship.team === team) {
+                ship.showMe();
+                this.showEnemies(ship.x, ship.y, ship.scan_range, team);
+            } else {
+                ship.hideMe();
+            }
+        });
     }
 
     // end this players ship placement and update game state 

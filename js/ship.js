@@ -187,10 +187,10 @@ class Ship extends Phaser.GameObjects.Sprite {
 
         if(this.core_stress >= this.hull.max_core_stress) {
             this.core_overload = 1;
-            this.turn_finished = 1;
-            this.has_moved = 1;
-            this.has_attacked = 1;
-            this.has_faced = 1;
+            this.turn_finished = true;
+            this.has_moved = true;
+            this.has_attacked = true;
+            this.has_faced = true;
         }
     }
 
