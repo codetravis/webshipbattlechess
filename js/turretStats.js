@@ -87,8 +87,8 @@ class TurretStats {
                 fighter_accuracy: 0.05,
                 range: 5,
                 power_cost: 5,
-                max_ammo: 50,
-                ammo: 50,
+                max_ammo: 20,
+                ammo: 20,
             },
             "single_concussionmissile_turret": {
                 name: "single_concussionmissile_turret",
@@ -183,8 +183,8 @@ class TurretStats {
                 fighter_accuracy: 0.05,
                 range: 5,
                 power_cost: 6,
-                max_ammo: 80,
-                ammo: 80,
+                max_ammo: 24,
+                ammo: 24,
             },
             "dual_concussionmissile_turret": {
                 name: "dual_concussionmissile_turret",
@@ -279,8 +279,8 @@ class TurretStats {
                 fighter_accuracy: 0.05,
                 range: 5,
                 power_cost: 7,
-                max_ammo: 90,
-                ammo: 90,
+                max_ammo: 27,
+                ammo: 27,
             },
             "quad_laser_turret": {
                 name: "quad_laser_turret",
@@ -359,8 +359,8 @@ class TurretStats {
                 fighter_accuracy: 0.05,
                 range: 5,
                 power_cost: 8,
-                max_ammo: 100,
-                ammo: 100,
+                max_ammo: 32,
+                ammo: 32,
             },
         }
     }

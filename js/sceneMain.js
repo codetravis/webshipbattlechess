@@ -10,6 +10,11 @@ class SceneMain extends Phaser.Scene {
         this.load.image("medium_freighter", "images/medium_freighter.svg");
         this.load.image("drudge_freighter", "images/drudge_freighter.svg");
         this.load.image("shield_cruiser", "images/shield_cruiser.svg");
+        this.load.image("hff_corvette", "images/hff_corvette.svg");
+        this.load.image("hff_frigate", "images/hff_frigate.svg");
+        this.load.image("hff_destroyer", "images/hff_destroyer.svg");
+        this.load.image("haxagun_light_cruiser", "images/haxagun_light_cruiser.svg");
+        this.load.image("salvaged_haxagun_light_cruiser", "images/salvaged_haxagun_light_cruiser.svg");
         this.load.image("move_square", "images/movement_square.svg");
         this.load.image("attack_square", "images/attack_square.svg");
         this.load.image("end_button", "images/movement_square.svg");
